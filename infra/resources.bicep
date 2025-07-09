@@ -10,9 +10,6 @@ param resourceToken string
 @description('Flag to deploy Redis cache')
 param deployRedis bool = true
 
-@description('App Service Plan SKU')
-param appServicePlanSku string = 'P2v3'
-
 @description('Redis SKU')
 param redisSku string = 'Standard'
 
@@ -28,10 +25,23 @@ param frontendImageName string = ''
 // Define the tags that will be applied to all resources
 var tags = {
   'azd-env-name': environmentName
-  'project': 'planmorph'
+  project: 'planmorph'
 }
 
 var abbrs = loadJsonContent('abbreviations.json')
+
+// Log Analytics Workspace
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
+  location: location
+  tags: tags
+  properties: {
+    retentionInDays: 30
+    sku: {
+      name: 'PerGB2018'
+    }
+  }
+}
 
 // Container Apps Environment
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
@@ -49,29 +59,16 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01'
   }
 }
 
-// Log Analytics Workspace
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
-  name: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
-  location: location
-  tags: tags
-  properties: {
-    retentionInDays: 30
-    sku: {
-      name: 'PerGB2018'
-    }
-  }
-}
-
 // Container Registry
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
-  name: '${abbrs.containerRegistryRegistries}${resourceToken}'
+  name: '${abbrs.containerRegistryRegistries}planmorph${toLower(resourceToken)}'
   location: location
   tags: tags
   sku: {
     name: 'Basic'
   }
   properties: {
-    adminUserEnabled: true
+    adminUserEnabled: false
   }
 }
 
@@ -113,144 +110,143 @@ resource redisCache 'Microsoft.Cache/redis@2024-11-01' = if (deployRedis) {
   }
 }
 
-// App Service Plan for high performance (alternative to Container Apps)
-resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
-  name: '${abbrs.webServerFarms}${resourceToken}'
+// Backend API Container App
+resource backendContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
+  name: '${abbrs.appContainerApps}api-${resourceToken}'
   location: location
-  tags: tags
-  sku: {
-    name: appServicePlanSku
-    tier: contains(appServicePlanSku, 'P') ? (contains(appServicePlanSku, 'v3') ? 'PremiumV3' : 'PremiumV2') : (contains(appServicePlanSku, 'S') ? 'Standard' : 'Basic')
-  }
-  kind: 'linux'
-  properties: {
-    reserved: true // Required for Linux
-  }
-}
-
-// Backend API App Service
-resource backendAppService 'Microsoft.Web/sites@2023-01-01' = {
-  name: '${abbrs.webSitesAppService}backend-${resourceToken}'
-  location: location
-  tags: union(tags, { 'azd-service-name': 'backend' })
-  kind: 'app,linux,container'
+  tags: union(tags, { 'azd-service-name': 'api' })
   identity: {
-    type: 'SystemAssigned, UserAssigned'
+    type: 'UserAssigned'
     userAssignedIdentities: {
       '${managedIdentity.id}': {}
     }
   }
   properties: {
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      alwaysOn: true
-      linuxFxVersion: backendImageName != '' ? 'DOCKER|${containerRegistry.properties.loginServer}/${backendImageName}' : 'DOCKER|node:18-alpine'
-      appSettings: [
-        {
-          name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
-          value: 'false'
+    managedEnvironmentId: containerAppsEnvironment.id
+    configuration: {
+      ingress: {
+        external: true
+        targetPort: 5000
+        corsPolicy: {
+          allowedOrigins: ['*']
+          allowedMethods: ['*']
+          allowedHeaders: ['*']
+          allowCredentials: true
         }
+      }
+      registries: [
         {
-          name: 'DOCKER_REGISTRY_SERVER_URL'
-          value: 'https://${containerRegistry.properties.loginServer}'
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_USERNAME'
-          value: containerRegistry.name
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
-          value: containerRegistry.listCredentials().passwords[0].value
-        }
-        {
-          name: 'NODE_ENV'
-          value: 'production'
-        }
-        {
-          name: 'PORT'
-          value: '5000'
-        }
-        {
-          name: 'REDIS_HOST'
-          value: deployRedis ? redisCache.properties.hostName : ''
-        }
-        {
-          name: 'REDIS_PORT'
-          value: '6380'
-        }
-        {
-          name: 'REDIS_PASSWORD'
-          value: deployRedis ? redisCache.listKeys().primaryKey : ''
-        }
-        {
-          name: 'CORS_ORIGIN'
-          value: 'https://${frontendAppService.properties.defaultHostName}'
+          server: containerRegistry.properties.loginServer
+          identity: managedIdentity.id
         }
       ]
-      cors: {
-        allowedOrigins: [
-          'https://${frontendAppService.properties.defaultHostName}'
-          'http://localhost:3000'
-        ]
-        supportCredentials: true
-      }
-      healthCheckPath: '/health'
+      secrets: []
     }
-    httpsOnly: true
-    publicNetworkAccess: 'Enabled'
+    template: {
+      containers: [
+        {
+          image: backendImageName != '' ? '${containerRegistry.properties.loginServer}/${backendImageName}' : 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          name: 'api'
+          env: [
+            {
+              name: 'NODE_ENV'
+              value: 'production'
+            }
+            {
+              name: 'PORT'
+              value: '5000'
+            }
+            {
+              name: 'REDIS_HOST'
+              value: ''
+            }
+            {
+              name: 'REDIS_PORT'
+              value: '6380'
+            }
+            {
+              name: 'REDIS_PASSWORD'
+              value: ''
+            }
+            {
+              name: 'CORS_ORIGIN'
+              value: '*'
+            }
+          ]
+          resources: {
+            cpu: json('1.0')
+            memory: '2.0Gi'
+          }
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 10
+      }
+    }
   }
   dependsOn: [
     acrPullRole
   ]
 }
 
-// Frontend Next.js App Service
-resource frontendAppService 'Microsoft.Web/sites@2023-01-01' = {
-  name: '${abbrs.webSitesAppService}frontend-${resourceToken}'
+// Frontend Next.js Container App
+resource frontendContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
+  name: '${abbrs.appContainerApps}web-${resourceToken}'
   location: location
-  tags: union(tags, { 'azd-service-name': 'frontend' })
-  kind: 'app,linux,container'
+  tags: union(tags, { 'azd-service-name': 'web' })
   identity: {
-    type: 'SystemAssigned, UserAssigned'
+    type: 'UserAssigned'
     userAssignedIdentities: {
       '${managedIdentity.id}': {}
     }
   }
   properties: {
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      alwaysOn: true
-      linuxFxVersion: frontendImageName != '' ? 'DOCKER|${containerRegistry.properties.loginServer}/${frontendImageName}' : 'DOCKER|node:18-alpine'
-      appSettings: [
-        {
-          name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
-          value: 'false'
+    managedEnvironmentId: containerAppsEnvironment.id
+    configuration: {
+      ingress: {
+        external: true
+        targetPort: 3000
+        corsPolicy: {
+          allowedOrigins: ['*']
+          allowedMethods: ['*']
+          allowedHeaders: ['*']
+          allowCredentials: true
         }
+      }
+      registries: [
         {
-          name: 'DOCKER_REGISTRY_SERVER_URL'
-          value: 'https://${containerRegistry.properties.loginServer}'
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_USERNAME'
-          value: containerRegistry.name
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
-          value: containerRegistry.listCredentials().passwords[0].value
-        }
-        {
-          name: 'NODE_ENV'
-          value: 'production'
-        }
-        {
-          name: 'NEXT_PUBLIC_API_URL'
-          value: 'https://${backendAppService.properties.defaultHostName}'
+          server: containerRegistry.properties.loginServer
+          identity: managedIdentity.id
         }
       ]
-      healthCheckPath: '/'
     }
-    httpsOnly: true
-    publicNetworkAccess: 'Enabled'
+    template: {
+      containers: [
+        {
+          image: frontendImageName != '' ? '${containerRegistry.properties.loginServer}/${frontendImageName}' : 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          name: 'web'
+          env: [
+            {
+              name: 'NODE_ENV'
+              value: 'production'
+            }
+            {
+              name: 'NEXT_PUBLIC_API_URL'
+              value: 'https://localhost:5000'
+            }
+          ]
+          resources: {
+            cpu: json('1.0')
+            memory: '2.0Gi'
+          }
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 10
+      }
+    }
   }
   dependsOn: [
     acrPullRole
@@ -270,9 +266,14 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 // Outputs
-output BACKEND_URI string = 'https://${backendAppService.properties.defaultHostName}'
-output FRONTEND_URI string = 'https://${frontendAppService.properties.defaultHostName}'
-output REDIS_HOST_NAME string = deployRedis ? redisCache.properties.hostName : ''
+output BACKEND_URI string = 'https://${backendContainerApp.properties.configuration.ingress.fqdn}'
+output FRONTEND_URI string = 'https://${frontendContainerApp.properties.configuration.ingress.fqdn}'
+output REDIS_HOST_NAME string = ''
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.properties.loginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerRegistry.name
-output RESOURCE_GROUP_NAME string = resourceGroup().name
+output SERVICE_API_IDENTITY_PRINCIPAL_ID string = managedIdentity.properties.principalId
+output SERVICE_API_NAME string = backendContainerApp.name
+output SERVICE_API_URI string = 'https://${backendContainerApp.properties.configuration.ingress.fqdn}'
+output SERVICE_WEB_IDENTITY_PRINCIPAL_ID string = managedIdentity.properties.principalId
+output SERVICE_WEB_NAME string = frontendContainerApp.name
+output SERVICE_WEB_URI string = 'https://${frontendContainerApp.properties.configuration.ingress.fqdn}'

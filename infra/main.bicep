@@ -10,14 +10,10 @@ param environmentName string
 param location string
 
 @description('A unique suffix to ensure resource name uniqueness')
-param resourceToken string = toLower(uniqueString(subscription().id, environmentName, location))
+param resourceToken string = toLower(uniqueString(subscription().id, environmentName))
 
 @description('Flag to deploy Redis cache for high-scale performance')
 param deployRedis bool = true
-
-@description('App Service Plan SKU for high performance')
-@allowed(['B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'P1v2', 'P2v2', 'P3v2', 'P1v3', 'P2v3', 'P3v3'])
-param appServicePlanSku string = 'P2v3'
 
 @description('Redis SKU for caching')
 @allowed(['Basic', 'Standard', 'Premium'])
@@ -37,8 +33,8 @@ param frontendImageName string = ''
 // Define the tags that will be applied to all resources
 var tags = {
   'azd-env-name': environmentName
-  'project': 'planmorph'
-  'environment': environmentName
+  project: 'planmorph'
+  environment: environmentName
 }
 
 // Create resource group
@@ -57,7 +53,6 @@ module main 'resources.bicep' = {
     location: location
     resourceToken: resourceToken
     deployRedis: deployRedis
-    appServicePlanSku: appServicePlanSku
     redisSku: redisSku
     redisCapacity: redisCapacity
     backendImageName: backendImageName
@@ -66,8 +61,16 @@ module main 'resources.bicep' = {
 }
 
 // Outputs
+output RESOURCE_GROUP_ID string = rg.id
 output RESOURCE_GROUP_NAME string = rg.name
 output BACKEND_URI string = main.outputs.BACKEND_URI
 output FRONTEND_URI string = main.outputs.FRONTEND_URI
 output REDIS_HOST_NAME string = deployRedis ? main.outputs.REDIS_HOST_NAME : ''
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = main.outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT
+output AZURE_CONTAINER_REGISTRY_NAME string = main.outputs.AZURE_CONTAINER_REGISTRY_NAME
+output SERVICE_API_IDENTITY_PRINCIPAL_ID string = main.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+output SERVICE_API_NAME string = main.outputs.SERVICE_API_NAME
+output SERVICE_API_URI string = main.outputs.SERVICE_API_URI
+output SERVICE_WEB_IDENTITY_PRINCIPAL_ID string = main.outputs.SERVICE_WEB_IDENTITY_PRINCIPAL_ID
+output SERVICE_WEB_NAME string = main.outputs.SERVICE_WEB_NAME
+output SERVICE_WEB_URI string = main.outputs.SERVICE_WEB_URI
