@@ -1,0 +1,76 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: planmorph
+metadata:
+  template: planmorph-plans-app@0.0.1-beta
+
+infra:
+  provider: bicep
+
+services:
+  backend:
+    project: ./backend
+    language: ts
+    host: appservice
+    docker:
+      path: ./Dockerfile
+    env:
+      NODE_ENV: production
+      PORT: 5000
+      
+  frontend:
+    project: ./frontend
+    language: ts
+    host: appservice
+    docker:
+      path: ./Dockerfile
+    env:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${BACKEND_URI}
+
+hooks:
+  predeploy:
+    shell: pwsh
+    run: |
+      Write-Host "Installing backend dependencies..."
+      cd backend
+      npm ci --production
+      Write-Host "Building backend..."
+      npm run build
+      cd ..
+      
+      Write-Host "Installing frontend dependencies..."
+      cd frontend
+      npm ci --production
+      Write-Host "Building frontend..."
+      npm run build
+      cd ..
+      
+  postdeploy:
+    shell: pwsh
+    run: |
+      Write-Host "Deployment completed successfully!"
+      Write-Host "Backend URL: ${BACKEND_URI}"
+      Write-Host "Frontend URL: ${FRONTEND_URI}"
+      Write-Host "Redis Host: ${REDIS_HOST_NAME}"
+      Write-Host ""
+      Write-Host "Testing backend health endpoint..."
+      try {
+        $response = Invoke-RestMethod -Uri "${BACKEND_URI}/health" -Method Get
+        Write-Host "✅ Backend health check passed: $($response.message)"
+      } catch {
+        Write-Host "❌ Backend health check failed: $_"
+      }
+      
+      Write-Host ""
+      Write-Host "Testing frontend..."
+      try {
+        $response = Invoke-WebRequest -Uri "${FRONTEND_URI}" -Method Get
+        if ($response.StatusCode -eq 200) {
+          Write-Host "✅ Frontend is accessible"
+        } else {
+          Write-Host "❌ Frontend returned status code: $($response.StatusCode)"
+        }
+      } catch {
+        Write-Host "❌ Frontend test failed: $_"
+      }

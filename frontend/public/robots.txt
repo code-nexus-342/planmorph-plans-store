@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Optimize crawl budget
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: *.json$
+
+# Main sitemap
+Sitemap: https://planmorph.com/sitemap.xml
+
+# Performance optimization
+Crawl-delay: 1

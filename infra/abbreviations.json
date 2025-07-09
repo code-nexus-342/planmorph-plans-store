@@ -1,0 +1,10 @@
+{
+  "appManagedEnvironments": "cae-",
+  "operationalInsightsWorkspaces": "log-",
+  "containerRegistryRegistries": "cr",
+  "managedIdentityUserAssignedIdentities": "id-",
+  "cacheRedis": "redis-",
+  "webServerFarms": "plan-",
+  "webSitesAppService": "app-",
+  "insightsComponents": "appi-"
+}
