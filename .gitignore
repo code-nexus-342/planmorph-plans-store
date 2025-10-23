@@ -1,0 +1,153 @@
+# Root-level .gitignore for PlanMorph project
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.yarn/
+package-lock.json
+
+# Environment variables - CRITICAL: Never commit these!
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.*.local
+*.env
+
+# Build output
+dist/
+build/
+.next/
+.nuxt/
+out/
+*.tsbuildinfo
+.vercel/
+.netlify/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+combined.log
+error.log
+access.log
+
+# Editor directories and files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporary folders
+tmp/
+temp/
+.tmp/
+
+# Testing
+coverage/
+*.lcov
+.nyc_output/
+test-results/
+playwright-report/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Azure deployment
+.azure/
+.deployment
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Package managers
+.npm
+.yarn-integrity
+.pnpm-debug.log*
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+*.sql.gz
+
+# SSL certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+ssl/
+certs/
+
+# Backup files
+*.backup
+*.bak
+*.orig
+*.old
+
+# File uploads
+uploads/
+public/uploads/
+storage/
+static/uploads/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# PM2
+ecosystem.config.js
+.pm2/
+
+# Development scripts with sensitive data
+setup-database.js
+setup-database-direct.js
+check-tables.js
+quick-migration.js
+create-newsletter-table.js
+
+# Redis dumps
+dump.rdb
+
+# Generated files
+CLEANUP_*.md
+VERIFICATION_*.md
+FIX_*.md
+MODERN_*.md
+DATABASE_CONNECTION_FIX.md
