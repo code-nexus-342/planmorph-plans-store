@@ -1,85 +1,86 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '../utils/logger';
+import { ZodError } from 'zod';
+import logger from '../utils/logger';
 
-export interface AppError extends Error {
-  statusCode?: number;
-  isOperational?: boolean;
-}
-
-export class ApiError extends Error implements AppError {
+export class AppError extends Error {
   statusCode: number;
   isOperational: boolean;
 
-  constructor(message: string, statusCode: number = 500, isOperational: boolean = true) {
+  constructor(message: string, statusCode: number) {
     super(message);
     this.statusCode = statusCode;
-    this.isOperational = isOperational;
-    
+    this.isOperational = true;
     Error.captureStackTrace(this, this.constructor);
   }
 }
 
-// Error handler middleware
 export const errorHandler = (
-  err: AppError,
+  err: Error | AppError,
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
-  let { statusCode = 500, message } = err;
+) => {
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Validation error',
+      errors: err.errors.map(e => ({
+        field: e.path.join('.'),
+        message: e.message
+      }))
+    });
+  }
 
-  // Log error
-  logger.error('Error occurred:', {
-    error: err.message,
+  if (err instanceof AppError) {
+    logger.warn({
+      statusCode: err.statusCode,
+      message: err.message,
+      path: req.path,
+      method: req.method
+    });
+
+    return res.status(err.statusCode).json({
+      status: 'error',
+      message: err.message
+    });
+  }
+
+  // Database errors
+  if ((err as any).code === '23505') {
+    return res.status(409).json({
+      status: 'error',
+      message: 'Duplicate entry - resource already exists'
+    });
+  }
+
+  if ((err as any).code === '23503') {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Referenced resource not found'
+    });
+  }
+
+  // Log unexpected errors
+  logger.error({
+    error: err,
     stack: err.stack,
-    url: req.url,
-    method: req.method,
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
+    path: req.path,
+    method: req.method
   });
 
-  // Handle specific error types
-  if (err.name === 'ValidationError') {
-    statusCode = 400;
-    message = 'Validation Error';
-  } else if (err.name === 'CastError') {
-    statusCode = 400;
-    message = 'Invalid ID format';
-  } else if (err.name === 'JsonWebTokenError') {
-    statusCode = 401;
-    message = 'Invalid token';
-  } else if (err.name === 'TokenExpiredError') {
-    statusCode = 401;
-    message = 'Token expired';
-  }
+  // Don't leak error details in production
+  const message = process.env.NODE_ENV === 'production' 
+    ? 'Internal server error' 
+    : err.message;
 
-  // Don't expose internal errors in production
-  if (process.env.NODE_ENV === 'production' && !err.isOperational) {
-    message = 'Something went wrong';
-  }
-
-  res.status(statusCode).json({
-    success: false,
-    error: {
-      message,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-    },
+  return res.status(500).json({
+    status: 'error',
+    message
   });
 };
 
-// Handle async errors
 export const asyncHandler = (fn: Function) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
-};
-
-// 404 handler
-export const notFoundHandler = (req: Request, res: Response) => {
-  res.status(404).json({
-    success: false,
-    error: {
-      message: `Route ${req.originalUrl} not found`,
-    },
-  });
 };

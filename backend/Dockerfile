@@ -1,46 +1,33 @@
-# Backend Dockerfile for high-performance production deployment
-FROM node:18-alpine AS base
+# Multi-stage build for production
+FROM node:20-alpine AS builder
 
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production && npm cache clean --force
+# Copy package files
+COPY package*.json ./
 
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Install dependencies
+RUN npm install
+
+# Copy source code
 COPY . .
 
-# Build the TypeScript application
+# Build TypeScript
 RUN npm run build
 
-# Production image, copy all the files and run the app
-FROM base AS runner
+# Production stage
+FROM node:20-alpine
+
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV PORT=5000
+# Copy package files and install production dependencies only
+COPY package*.json ./
+RUN npm install --omit=dev
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 apiuser
-
-# Copy built application
-COPY --from=builder --chown=apiuser:nodejs /app/dist ./dist
-COPY --from=builder --chown=apiuser:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=apiuser:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=apiuser:nodejs /app/ecosystem.config.json ./ecosystem.config.json
-
-# Create logs directory
-RUN mkdir -p logs && chown apiuser:nodejs logs
-
-USER apiuser
+# Copy built files from builder
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 5000
 
-# Use PM2 for production clustering
-CMD ["npm", "start"]
+# Run the application
+CMD ["node", "dist/index.js"]

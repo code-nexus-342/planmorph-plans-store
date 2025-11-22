@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;900&family=Rajdhani:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-nebula-900: #050510;
+    --color-neon-cyan: #00f3ff;
+    --color-neon-purple: #bc13fe;
+  }
+
+  body {
+    @apply bg-nebula-900 text-white font-sans overflow-x-hidden;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.15), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15), transparent 25%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-wide;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-glass-100 backdrop-blur-md border border-glass-200 rounded-2xl shadow-glass;
+  }
+
+  .glass-button {
+    @apply px-6 py-3 rounded-full font-heading font-bold tracking-wider uppercase transition-all duration-300
+           bg-transparent border border-neon-cyan text-neon-cyan
+           hover:bg-neon-cyan hover:text-nebula-900 hover:shadow-neon-cyan;
+  }
+
+  .glass-input {
+    @apply w-full bg-glass-100 border border-glass-200 rounded-lg px-4 py-3 text-white placeholder-gray-400
+           focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan via-white to-neon-purple;
+  }
+  
+  .nav-link {
+    @apply relative text-gray-300 hover:text-white transition-colors duration-300;
+  }
+  
+  .nav-link::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-neon-cyan transition-all duration-300;
+  }
+  
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}

@@ -1,43 +1,33 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "planmorph-frontend",
   "private": true,
-  "engines": {
-    "node": ">=20.11.1",
-    "npm": ">=10.0.0"
-  },
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "export": "next build && next export",
-    "start": "node server.js",
-    "next:start": "next start",
-    "lint": "next lint"
+    "dev": "vite",
+    "start": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.4",
-    "@react-three/drei": "^10.7.6",
-    "@react-three/fiber": "^9.4.0",
-    "@shadcn/ui": "^0.0.4",
-    "@types/three": "^0.180.0",
-    "framer-motion": "^12.23.24",
-    "js-cookie": "^3.0.5",
-    "lucide-react": "^0.525.0",
-    "next": "^15.5.6",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "three": "^0.180.0"
+    "axios": "^1.6.2",
+    "framer-motion": "^10.16.4",
+    "lucide-react": "^0.292.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "zustand": "^4.4.6"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "@types/js-cookie": "^3.0.6",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.5",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@types/node": "^20.9.0",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
   }
 }
