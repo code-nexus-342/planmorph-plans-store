@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import * as fs from 'fs';
@@ -11,14 +10,14 @@ const pool = new Pool(getPoolConfig());
 
 async function runMigration() {
   try {
-    console.log('Starting database migration...');
+    console.log('Running migration 003_add_contact_and_custom_requests.sql...');
     
-    const schemaPath = path.join(__dirname, 'schema.sql');
-    const schema = fs.readFileSync(schemaPath, 'utf-8');
+    const migrationPath = path.join(__dirname, 'migrations', '003_add_contact_and_custom_requests.sql');
+    const sql = fs.readFileSync(migrationPath, 'utf-8');
     
-    await pool.query(schema);
+    await pool.query(sql);
     
-    console.log('✓ Database schema created successfully');
+    console.log('✓ Migration applied successfully');
     
     await pool.end();
     process.exit(0);

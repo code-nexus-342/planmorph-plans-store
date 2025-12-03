@@ -26,17 +26,17 @@ CREATE TABLE IF NOT EXISTS contact_messages (
 );
 
 -- Drop Professional Tables (Cleanup)
-DROP TABLE IF NOT EXISTS structural_drawings CASCADE;
-DROP TABLE IF NOT EXISTS survey_records CASCADE;
-DROP TABLE IF NOT EXISTS hr_records CASCADE;
-DROP TABLE IF NOT EXISTS financial_records CASCADE;
-DROP TABLE IF NOT EXISTS analytics_metrics CASCADE;
-DROP TABLE IF NOT EXISTS professional_activities CASCADE;
-DROP TABLE IF NOT EXISTS professional_profiles CASCADE;
-DROP TABLE IF NOT EXISTS role_applications CASCADE;
-DROP TABLE IF NOT EXISTS job_roles CASCADE;
-DROP TABLE IF NOT EXISTS architect_profiles CASCADE;
-DROP TABLE IF NOT EXISTS architect_applications CASCADE;
+DROP TABLE IF EXISTS structural_drawings CASCADE;
+DROP TABLE IF EXISTS survey_records CASCADE;
+DROP TABLE IF EXISTS hr_records CASCADE;
+DROP TABLE IF EXISTS financial_records CASCADE;
+DROP TABLE IF EXISTS analytics_metrics CASCADE;
+DROP TABLE IF EXISTS professional_activities CASCADE;
+DROP TABLE IF EXISTS professional_profiles CASCADE;
+DROP TABLE IF EXISTS role_applications CASCADE;
+DROP TABLE IF EXISTS job_roles CASCADE;
+DROP TABLE IF EXISTS architect_profiles CASCADE;
+DROP TABLE IF EXISTS architect_applications CASCADE;
 
 -- Drop unused types if possible (might fail if used by other things, so use CASCADE carefully or ignore)
 -- We won't drop types to avoid complex dependency issues for now, but we could.

@@ -2,13 +2,11 @@
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
+import { getPoolConfig } from './index';
 
 dotenv.config();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
+const pool = new Pool(getPoolConfig());
 
 async function seed() {
   try {
