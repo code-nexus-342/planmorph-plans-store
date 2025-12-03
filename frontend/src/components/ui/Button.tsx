@@ -16,19 +16,19 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center rounded-lg font-heading font-bold tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none uppercase';
+  const baseStyles = 'inline-flex items-center justify-center font-heading font-bold tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none uppercase rounded-none';
   
   const variants = {
-    primary: 'bg-neon-cyan text-nebula-900 hover:bg-white hover:shadow-neon-cyan border border-transparent',
-    secondary: 'bg-nebula-800 text-white border border-glass-200 hover:border-neon-cyan hover:text-neon-cyan',
-    outline: 'border-2 border-neon-cyan text-neon-cyan bg-transparent hover:bg-neon-cyan hover:text-nebula-900',
-    ghost: 'text-gray-300 hover:text-white hover:bg-white/10',
+    primary: 'bg-architect-900 text-white hover:bg-accent-teal hover:shadow-soft border border-transparent',
+    secondary: 'bg-white text-architect-900 border border-architect-900 hover:bg-gray-50',
+    outline: 'border-2 border-architect-900 text-architect-900 bg-transparent hover:bg-architect-900 hover:text-white',
+    ghost: 'text-gray-500 hover:text-architect-900 hover:bg-gray-100',
     danger: 'bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-900/20',
   };
 
   const sizes = {
     sm: 'h-9 px-4 text-xs',
-    md: 'h-11 px-6 text-sm',
+    md: 'h-12 px-6 text-sm',
     lg: 'h-14 px-8 text-base',
   };
 

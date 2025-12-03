@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;900&family=Rajdhani:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,68 +6,70 @@
 
 @layer base {
   :root {
-    --color-nebula-900: #050510;
-    --color-neon-cyan: #00f3ff;
-    --color-neon-purple: #bc13fe;
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f5f5f5;
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #717171;
+    --color-accent-gold: #c5a059;
+    --color-accent-teal: #2d6a6a;
   }
 
   body {
-    @apply bg-nebula-900 text-white font-sans overflow-x-hidden;
-    background-image: 
-      radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.15), transparent 25%),
-      radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15), transparent 25%);
-    background-attachment: fixed;
+    @apply bg-white text-architect-900 font-sans overflow-x-hidden;
+    background-image: none;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-wide;
+    @apply font-heading tracking-tight text-architect-900;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-glass-100 backdrop-blur-md border border-glass-200 rounded-2xl shadow-glass;
+    @apply bg-white border border-gray-100 rounded-none shadow-card;
   }
 
   .glass-button {
-    @apply px-6 py-3 rounded-full font-heading font-bold tracking-wider uppercase transition-all duration-300
-           bg-transparent border border-neon-cyan text-neon-cyan
-           hover:bg-neon-cyan hover:text-nebula-900 hover:shadow-neon-cyan;
+    @apply px-8 py-4 rounded-none font-heading font-bold tracking-wide uppercase transition-all duration-300
+           bg-architect-900 text-white border border-architect-900
+           hover:bg-white hover:text-architect-900 hover:shadow-soft;
   }
 
   .glass-input {
-    @apply w-full bg-glass-100 border border-glass-200 rounded-lg px-4 py-3 text-white placeholder-gray-400
-           focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all;
+    @apply w-full bg-gray-50 border border-gray-200 rounded-none px-4 py-3 text-architect-900 placeholder-gray-400
+           focus:outline-none focus:border-accent-teal focus:ring-1 focus:ring-accent-teal transition-all;
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan via-white to-neon-purple;
+    @apply text-architect-900;
   }
   
   .nav-link {
-    @apply relative text-gray-300 hover:text-white transition-colors duration-300;
+    @apply relative text-gray-500 hover:text-architect-900 transition-colors duration-300 font-medium;
   }
   
   .nav-link::after {
     content: '';
-    @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-neon-cyan transition-all duration-300;
+    @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-teal transition-all duration-300;
   }
   
   .nav-link:hover::after {
     @apply w-full;
   }
+
+  .btn-primary {
+    @apply px-8 py-4 bg-architect-900 text-white font-heading font-bold tracking-wide uppercase 
+           hover:bg-accent-teal transition-all duration-300 shadow-soft;
+  }
+
+  .btn-secondary {
+    @apply px-8 py-4 bg-white text-architect-900 border border-architect-900 font-heading font-bold tracking-wide uppercase 
+           hover:bg-gray-50 transition-all duration-300;
+  }
 }
 
 @layer utilities {
-  .perspective-1000 {
-    perspective: 1000px;
-  }
-  
-  .transform-style-3d {
-    transform-style: preserve-3d;
-  }
-  
-  .backface-hidden {
-    backface-visibility: hidden;
+  .text-shadow-none {
+    text-shadow: none;
   }
 }

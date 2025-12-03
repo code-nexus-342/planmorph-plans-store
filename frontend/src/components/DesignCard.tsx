@@ -23,26 +23,23 @@ interface DesignCardProps {
 
 const DesignCard: React.FC<DesignCardProps> = ({ design }) => {
   return (
-    <Link to={`/designs/${design.id}`}>
+    <Link to={`/designs/${design.id}`} className="block h-full">
       <motion.div 
         variants={hoverLift}
         initial="rest"
         whileHover="hover"
-        className="group relative h-full overflow-hidden rounded-2xl border border-glass-200 bg-glass-100 shadow-glass transition-all duration-500 hover:border-neon-cyan/50 hover:shadow-neon-cyan"
+        className="group relative h-full flex flex-col bg-white border border-gray-100 hover:border-accent-teal hover:shadow-card transition-all duration-300"
       >
-        {/* Holographic Overlay */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 pointer-events-none" />
-
-        {/* Image Container */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-nebula-800">
+        {/* Image Container - Larger Aspect Ratio */}
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
           {design.preview_url ? (
             <img 
               src={design.preview_url} 
               alt={design.title} 
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:brightness-110"
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-gray-500">
+            <div className="flex h-full items-center justify-center text-gray-400">
               <div className="flex flex-col items-center gap-2">
                 <Ruler size={32} className="opacity-50" />
                 <span className="text-sm font-medium">No Preview Available</span>
@@ -52,47 +49,50 @@ const DesignCard: React.FC<DesignCardProps> = ({ design }) => {
           
           {/* Overlay Badge */}
           <div className="absolute top-4 right-4 z-20">
-            <span className="rounded-full bg-nebula-900/80 border border-neon-cyan/30 px-3 py-1 text-xs font-bold uppercase tracking-wider text-neon-cyan backdrop-blur-md shadow-lg">
-              Verified Plan
+            <span className="bg-white/90 backdrop-blur-sm px-3 py-1 text-xs font-bold uppercase tracking-wider text-architect-900 shadow-sm">
+              Verified
             </span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="relative z-20 flex h-full flex-col p-5">
-          <div className="mb-3 flex items-start justify-between">
-            <h3 className="text-lg font-heading font-bold text-white line-clamp-1 group-hover:text-neon-cyan transition-colors duration-300 text-shadow-sm">
+        <div className="flex flex-col flex-grow p-6">
+          <div className="mb-4">
+            <h3 className="text-xl font-heading font-bold text-architect-900 line-clamp-1 group-hover:text-accent-teal transition-colors duration-300">
               {design.title}
             </h3>
+            <p className="text-sm text-gray-500 mt-1">
+              Plot Required: <span className="font-medium text-architect-900">50x100 ft</span>
+            </p>
           </div>
 
           {/* Specs Grid */}
-          <div className="mb-6 grid grid-cols-3 gap-2 border-y border-glass-200 py-3">
+          <div className="mb-6 grid grid-cols-3 gap-4 border-y border-gray-100 py-4">
             {design.specifications && (
               <>
-                <div className="flex flex-col items-center justify-center text-center group-hover:text-neon-cyan transition-colors duration-300">
-                  <div className="mb-1 flex items-center gap-1 text-gray-400 group-hover:text-neon-cyan/70">
-                    <BedDouble size={16} />
+                <div className="flex flex-col items-center justify-center text-center">
+                  <div className="mb-1 text-gray-400">
+                    <BedDouble size={18} strokeWidth={1.5} />
                   </div>
-                  <span className="text-sm font-semibold text-gray-200">
+                  <span className="text-sm font-bold text-architect-900">
                     {design.specifications.bedrooms}
                   </span>
                   <span className="text-[10px] text-gray-500 uppercase tracking-wider">Beds</span>
                 </div>
-                <div className="flex flex-col items-center justify-center border-l border-glass-200 text-center group-hover:text-neon-cyan transition-colors duration-300">
-                  <div className="mb-1 flex items-center gap-1 text-gray-400 group-hover:text-neon-cyan/70">
-                    <Bath size={16} />
+                <div className="flex flex-col items-center justify-center border-l border-gray-100 text-center">
+                  <div className="mb-1 text-gray-400">
+                    <Bath size={18} strokeWidth={1.5} />
                   </div>
-                  <span className="text-sm font-semibold text-gray-200">
+                  <span className="text-sm font-bold text-architect-900">
                     {design.specifications.bathrooms}
                   </span>
                   <span className="text-[10px] text-gray-500 uppercase tracking-wider">Baths</span>
                 </div>
-                <div className="flex flex-col items-center justify-center border-l border-glass-200 text-center group-hover:text-neon-cyan transition-colors duration-300">
-                  <div className="mb-1 flex items-center gap-1 text-gray-400 group-hover:text-neon-cyan/70">
-                    <Ruler size={16} />
+                <div className="flex flex-col items-center justify-center border-l border-gray-100 text-center">
+                  <div className="mb-1 text-gray-400">
+                    <Ruler size={18} strokeWidth={1.5} />
                   </div>
-                  <span className="text-sm font-semibold text-gray-200">
+                  <span className="text-sm font-bold text-architect-900">
                     {design.specifications.sqft}
                   </span>
                   <span className="text-[10px] text-gray-500 uppercase tracking-wider">Sq.Ft</span>
@@ -103,12 +103,12 @@ const DesignCard: React.FC<DesignCardProps> = ({ design }) => {
 
           <div className="mt-auto flex items-center justify-between">
             <div>
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Starting at</p>
-              <span className="text-xl font-bold text-neon-purple text-shadow-sm">${design.price}</span>
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Est. Cost</p>
+              <span className="text-lg font-bold text-architect-900">${design.price}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm font-bold text-neon-cyan opacity-0 transition-all duration-300 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0">
-              View Details <ArrowRight size={16} />
-            </div>
+            <button className="flex items-center gap-2 text-sm font-bold text-architect-900 group-hover:text-accent-teal transition-colors duration-300">
+              View Plan <ArrowRight size={16} />
+            </button>
           </div>
         </div>
       </motion.div>

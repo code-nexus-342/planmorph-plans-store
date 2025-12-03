@@ -7,50 +7,49 @@ export default {
   theme: {
     extend: {
       colors: {
+        architect: {
+          900: '#1a1a1a', // Rich Black
+          800: '#2d2d2d', // Dark Gray
+          700: '#4a4a4a', // Medium Gray
+          600: '#717171', // Light Gray
+          500: '#9e9e9e', // Lighter Gray
+          100: '#f5f5f5', // Off White
+          50: '#fafafa',  // Almost White
+        },
+        accent: {
+          gold: '#c5a059',
+          teal: '#2d6a6a',
+        },
+        // Keeping some legacy names mapped to new colors for compatibility during refactor
         nebula: {
-          900: '#050510', // Deep space
-          800: '#0a0a20', // Slightly lighter space
-          700: '#151530', // UI background
+          900: '#ffffff', // Background becomes white
+          800: '#f5f5f5', // Secondary background
+          700: '#e5e5e5', // Borders/Separators
         },
         neon: {
-          cyan: '#00f3ff',
-          purple: '#bc13fe',
-          magenta: '#ff0055',
+          cyan: '#2d6a6a', // Mapped to teal
+          purple: '#c5a059', // Mapped to gold
+          magenta: '#1a1a1a', // Mapped to black
         },
         glass: {
-          100: 'rgba(255, 255, 255, 0.1)',
-          200: 'rgba(255, 255, 255, 0.2)',
-          300: 'rgba(255, 255, 255, 0.3)',
+          100: 'rgba(255, 255, 255, 0.9)',
+          200: 'rgba(0, 0, 0, 0.05)',
+          300: 'rgba(0, 0, 0, 0.1)',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        heading: ['Outfit', 'sans-serif'],
-        mono: ['Rajdhani', 'monospace'],
+        sans: ['Inter', 'Manrope', 'sans-serif'],
+        heading: ['Manrope', 'Inter', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
       boxShadow: {
-        'neon-cyan': '0 0 10px rgba(0, 243, 255, 0.5), 0 0 20px rgba(0, 243, 255, 0.3)',
-        'neon-purple': '0 0 10px rgba(188, 19, 254, 0.5), 0 0 20px rgba(188, 19, 254, 0.3)',
-        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+        'soft': '0 4px 20px rgba(0, 0, 0, 0.05)',
+        'card': '0 10px 30px rgba(0, 0, 0, 0.04)',
+        'float': '0 20px 40px rgba(0, 0, 0, 0.08)',
       },
       backgroundImage: {
-        'nebula-gradient': 'radial-gradient(circle at 50% 50%, #1a1a40 0%, #050510 100%)',
+        'grid-pattern': "linear-gradient(to right, #f0f0f0 1px, transparent 1px), linear-gradient(to bottom, #f0f0f0 1px, transparent 1px)",
       },
-      animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'glow': 'glow 2s ease-in-out infinite alternate',
-      },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        glow: {
-          'from': { boxShadow: '0 0 10px #00f3ff, 0 0 20px #00f3ff' },
-          'to': { boxShadow: '0 0 20px #bc13fe, 0 0 30px #bc13fe' },
-        }
-      }
     },
   },
   plugins: [],

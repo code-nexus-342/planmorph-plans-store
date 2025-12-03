@@ -33,12 +33,12 @@ const Login: React.FC = () => {
   return (
     <div>
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-heading font-bold text-white mb-2">Welcome Back</h2>
-        <p className="text-gray-400">Enter your credentials to access your account</p>
+        <h2 className="text-3xl font-heading font-bold text-architect-900 mb-2">Welcome Back</h2>
+        <p className="text-gray-500">Enter your credentials to access your account</p>
       </div>
       
       {error && (
-        <div className="mb-6 rounded-lg bg-red-500/10 border border-red-500/50 p-4 text-sm text-red-400 text-center">
+        <div className="mb-6 bg-red-50 border border-red-100 p-4 text-sm text-red-600 text-center">
           {error}
         </div>
       )}
@@ -50,7 +50,6 @@ const Login: React.FC = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="glass-input"
         />
         <Input
           label="Password"
@@ -58,23 +57,23 @@ const Login: React.FC = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="glass-input"
         />
         <Button 
           type="submit" 
-          className="w-full bg-neon-cyan text-nebula-900 font-bold hover:bg-white shadow-neon-cyan border-none h-12 text-lg" 
+          className="w-full h-12 text-lg shadow-soft" 
           isLoading={isLoading}
         >
           <LogIn className="mr-2 h-5 w-5" /> Sign In
         </Button>
       </form>
       
-      <p className="mt-8 text-center text-sm text-gray-400">
+      <p className="mt-8 text-center text-sm text-gray-500">
         Don't have an account?{' '}
-        <Link to="/register" className="font-bold text-neon-cyan hover:text-white transition-colors">
+        <Link to="/register" className="font-bold text-architect-900 hover:text-accent-teal transition-colors">
           Sign up
         </Link>
       </p>
+
     </div>
   );
 };

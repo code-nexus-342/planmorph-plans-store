@@ -10,7 +10,17 @@ export const register = async (userData: any) => {
   return response.data;
 };
 
+export const verifyEmail = async (data: { email: string; code: string }) => {
+  const response = await api.post('/auth/verify-email', data);
+  return response.data;
+};
+
+export const resendVerification = async (email: string) => {
+  const response = await api.post('/auth/resend-verification', { email });
+  return response.data;
+};
+
 export const registerArchitect = async (profileData: any) => {
-    const response = await api.post('/auth/architect/apply', profileData);
+    const response = await api.post('/architect/apply', profileData);
     return response.data;
 }

@@ -1,0 +1,8 @@
+Starting verification...
+Register Response: {"user":{"id":10,"email":"testarch_1763879441@example.com","role":"architect"},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInJvbGUiOiJhcmNoaXRlY3QiLCJpYXQiOjE3NjM4Nzk0NDYsImV4cCI6MTc2Mzg4MzA0Nn0.GkYj1YgRro1oQ2iu3bAbO1qOThPiaLvcrXijtgzSWbw"}
+Registered User ID: 10
+Apply Response: {"message":"Application submitted successfully"}
+Login 1 Status: 403
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+UPDATE 1
+Login 2 Status: 200

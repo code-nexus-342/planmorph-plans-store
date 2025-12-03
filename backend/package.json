@@ -9,7 +9,10 @@
     "build": "tsc",
     "migrate": "ts-node src/db/migrate.ts",
     "seed": "ts-node src/db/seed.ts",
-    "db:setup": "npm run migrate && npm run seed"
+    "db:setup": "npm run migrate && npm run seed",
+    "migrate:extensions": "ts-node src/db/migrate-extensions.ts",
+    "seed:extensions": "ts-node src/db/seed-extensions.ts",
+    "db:setup:full": "npm run migrate && npm run seed && npm run migrate:extensions && npm run seed:extensions"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.454.0",

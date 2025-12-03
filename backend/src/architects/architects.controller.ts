@@ -2,6 +2,16 @@ import { Request, Response } from 'express';
 import pool from '../db';
 import { generateUploadUrl } from '../storage/storage.service';
 import { z } from 'zod';
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+const s3Client = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
+});
 
 export const getDashboardStats = async (req: Request, res: Response) => {
     const userId = (req as any).user.id;
@@ -133,3 +143,55 @@ export const addDesignMedia = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+const submitApplicationSchema = z.object({
+    full_name: z.string().min(1),
+    email: z.string().email(),
+    phone_number: z.string().optional(),
+    bio: z.string().optional(),
+    experience_years: z.number().int().nonnegative().optional(),
+    portfolio_url: z.string().url().optional(),
+    cv_url: z.string().url().optional(),
+    id_document_url: z.string().url().optional()
+});
+
+export const submitApplication = async (req: Request, res: Response) => {
+    try {
+        const data = submitApplicationSchema.parse(req.body);
+
+        // Check if email already exists in applications or users
+        const userCheck = await pool.query('SELECT id FROM users WHERE email = $1', [data.email]);
+        if (userCheck.rows.length > 0) {
+            return res.status(409).json({ message: 'Email already associated with an account' });
+        }
+
+        const appCheck = await pool.query('SELECT id FROM architect_applications WHERE email = $1 AND status = \'pending\'', [data.email]);
+        if (appCheck.rows.length > 0) {
+            return res.status(409).json({ message: 'You already have a pending application' });
+        }
+
+        await pool.query(
+            `INSERT INTO architect_applications 
+            (full_name, email, phone_number, bio, experience_years, portfolio_url, cv_url, id_document_url) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            [
+                data.full_name,
+                data.email,
+                data.phone_number,
+                data.bio,
+                data.experience_years,
+                data.portfolio_url,
+                data.cv_url,
+                data.id_document_url
+            ]
+        );
+
+        res.status(201).json({ message: 'Application submitted successfully' });
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({ errors: error.errors });
+        }
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};

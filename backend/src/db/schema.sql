@@ -9,6 +9,24 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     role user_role NOT NULL DEFAULT 'client',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_verified BOOLEAN DEFAULT FALSE,
+    verification_code VARCHAR(8),
+    verification_expires_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE architect_applications (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(50),
+    bio TEXT,
+    experience_years INTEGER,
+    portfolio_url VARCHAR(255),
+    cv_url VARCHAR(255),
+    id_document_url VARCHAR(255),
+    status application_status DEFAULT 'pending',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -21,7 +39,7 @@ CREATE TABLE architect_profiles (
     portfolio_url VARCHAR(255),
     cv_url VARCHAR(255),
     id_document_url VARCHAR(255),
-    status application_status DEFAULT 'pending',
+    status application_status DEFAULT 'approved', -- Profiles created after approval are approved by default
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

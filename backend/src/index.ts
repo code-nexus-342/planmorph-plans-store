@@ -5,9 +5,9 @@ import dotenv from 'dotenv';
 
 import authRoutes from './auth/auth.routes';
 import designRoutes from './designs/designs.routes';
-import architectRoutes from './architects/architects.routes';
-import adminRoutes from './admin/admin.routes';
 import purchaseRoutes from './purchases/purchases.routes';
+import customRequestsRoutes from './custom-requests/custom-requests.routes';
+import contactRoutes from './contact/contact.routes';
 import { errorHandler } from './middleware/errorHandler';
 import logger from './utils/logger';
 
@@ -27,9 +27,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/designs', designRoutes);
-app.use('/api/architect', architectRoutes);
-app.use('/api/admin', adminRoutes);
 app.use('/api/purchases', purchaseRoutes);
+app.use('/api/custom-requests', customRequestsRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'PlanMorph Backend is running' });

@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
-  id: number;
+  id: string;
   email: string;
   role: 'client' | 'architect' | 'admin';
+  is_verified?: boolean;
 }
 
 interface AuthContextType {

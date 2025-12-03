@@ -1,10 +1,13 @@
 import { Router } from 'express';
-import { getDashboardStats, getMyDesigns, createDesign, getUploadUrl, addDesignMedia } from './architects.controller';
+import { getDashboardStats, getMyDesigns, createDesign, getUploadUrl, addDesignMedia, submitApplication } from './architects.controller';
 import { authenticateToken, authorizeRole } from '../auth/auth.middleware';
 
 const router = Router();
 
-// All routes require architect role
+// Public routes
+router.post('/apply', submitApplication);
+
+// Protected routes (require architect role)
 router.use(authenticateToken, authorizeRole(['architect']));
 
 router.get('/dashboard', getDashboardStats);
