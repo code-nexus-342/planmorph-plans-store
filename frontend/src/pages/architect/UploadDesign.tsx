@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
+import { getCategories } from '../../services/categories.service';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { useNavigate } from 'react-router-dom';
@@ -13,10 +14,25 @@ const UploadDesign: React.FC = () => {
     price: '',
     bedrooms: '',
     bathrooms: '',
-    sqft: ''
+    sqft: '',
+    category_id: '',
+    video_url: ''
   });
+  const [categories, setCategories] = useState<any[]>([]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error('Failed to fetch categories', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -34,11 +50,22 @@ const UploadDesign: React.FC = () => {
             bedrooms: parseInt(formData.bedrooms),
             bathrooms: parseInt(formData.bathrooms),
             sqft: parseInt(formData.sqft)
-        }
+        },
+        category_id: parseInt(formData.category_id)
       });
 
       const designId = designRes.data.id;
       console.log('Design created with ID:', designId);
+
+      // Add Video URL if provided
+      if (formData.video_url) {
+        await api.post('/architect/media', {
+            designId: designId,
+            url: formData.video_url,
+            type: 'video',
+            isPreview: false
+        });
+      }
 
       // 2. Handle File Uploads (Mocking this part for now as we don't have a real file picker logic connected to S3 yet)
       // In a real implementation, we would iterate over selected files, get presigned URLs, upload to S3, then call /architect/media
@@ -78,9 +105,33 @@ const UploadDesign: React.FC = () => {
           />
         </div>
 
+        <div>
+            <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-200">Category</label>
+            <select
+                name="category_id"
+                value={formData.category_id}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 dark:border-gray-700 dark:text-white"
+                required
+            >
+                <option value="" className="bg-background">Select a Category</option>
+                {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id} className="bg-background text-black">{cat.name}</option>
+                ))}
+            </select>
+        </div>
+
+        <Input
+            label="Video Render URL (Optional)"
+            name="video_url"
+            value={formData.video_url}
+            onChange={handleChange}
+            placeholder="https://youtube.com/..."
+        />
+
         <div className="grid grid-cols-2 gap-4">
              <Input
-              label="Price ($)"
+              label="Price (KES)"
               name="price"
               type="number"
               value={formData.price}

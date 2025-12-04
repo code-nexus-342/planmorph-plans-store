@@ -5,21 +5,21 @@ const FAQItem: React.FC<{ question: string; answer: string }> = ({ question, ans
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <div className="border-b border-gray-100 last:border-0">
+    <div className="border-b border-white/10 last:border-0">
       <button 
         className="w-full py-6 flex items-center justify-between text-left focus:outline-none group"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="text-lg font-bold text-architect-900 group-hover:text-accent-teal transition-colors">{question}</span>
+        <span className="text-lg font-bold text-white group-hover:text-primary transition-colors">{question}</span>
         <ChevronDown 
-          className={`text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+          className={`text-text-secondary transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary' : ''}`} 
           size={20} 
         />
       </button>
       <div 
         className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 opacity-100 mb-6' : 'max-h-0 opacity-0'}`}
       >
-        <p className="text-gray-500 leading-relaxed">{answer}</p>
+        <p className="text-text-secondary leading-relaxed">{answer}</p>
       </div>
     </div>
   );
@@ -52,13 +52,13 @@ const FAQ: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-12 pt-24 max-w-3xl">
       <div className="text-center mb-16">
-        <h1 className="text-4xl font-heading font-bold text-architect-900 mb-4">Frequently Asked Questions</h1>
-        <p className="text-gray-500">
+        <h1 className="text-4xl font-heading font-bold text-white mb-4">Frequently Asked Questions</h1>
+        <p className="text-text-secondary">
           Find answers to common questions about buying and building with PlanMorph.
         </p>
       </div>
 
-      <div className="bg-white border border-gray-200 shadow-soft p-8">
+      <div className="glass-panel p-8 rounded-2xl">
         {faqs.map((faq, index) => (
           <FAQItem key={index} question={faq.question} answer={faq.answer} />
         ))}

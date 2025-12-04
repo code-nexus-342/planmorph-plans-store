@@ -39,7 +39,7 @@ lerna-debug.log*
 .idea/
 
 # Docker
-.dockerignore
+
 
 # Misc
 *.pem

@@ -67,27 +67,27 @@ const VerifyEmail: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <div className="h-12 w-12 rounded-full bg-accent-teal/10 flex items-center justify-center text-accent-teal">
+          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-glow">
             <Mail size={24} />
           </div>
         </div>
-        <h2 className="text-3xl font-heading font-bold text-architect-900 mb-2">Verify Your Email</h2>
-        <p className="text-gray-500">
-          We sent a verification code to <span className="text-architect-900 font-bold">{email}</span>
+        <h2 className="text-xl font-bold text-white mb-2">Verify Your Email</h2>
+        <p className="text-sm text-text-secondary">
+          We sent a verification code to <span className="text-white font-bold">{email}</span>
         </p>
       </div>
 
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-100 p-4 text-sm text-red-600 text-center">
+        <div className="bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400 text-center rounded-lg">
           {error}
         </div>
       )}
 
       {resendMessage && (
-        <div className="mb-6 bg-green-50 border border-green-100 p-4 text-sm text-green-600 text-center">
+        <div className="bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-400 text-center rounded-lg">
           {resendMessage}
         </div>
       )}
@@ -99,13 +99,13 @@ const VerifyEmail: React.FC = () => {
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           placeholder="ENTER CODE"
           required
-          className="text-center text-2xl tracking-widest uppercase"
+          className="text-center text-2xl tracking-widest uppercase bg-white/5 border-white/10 text-white placeholder-text-secondary/50 focus:border-primary focus:ring-primary rounded-lg"
           maxLength={8}
         />
         
         <Button 
           type="submit" 
-          className="w-full h-12 text-lg shadow-soft" 
+          className="w-full h-10 text-base shadow-glow bg-primary text-background hover:bg-primary/90 font-bold uppercase tracking-wide rounded-lg border-none" 
           isLoading={isLoading}
         >
           Verify Email
@@ -113,13 +113,13 @@ const VerifyEmail: React.FC = () => {
       </form>
       
       <div className="mt-6 text-center">
-        <p className="text-sm text-gray-500 mb-2">
+        <p className="text-xs text-text-secondary mb-2">
           Code expires in 20 minutes.
         </p>
         <button 
           onClick={handleResend}
           disabled={isResending}
-          className="text-accent-teal hover:text-architect-900 text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-primary hover:text-white text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isResending ? 'Resending...' : 'Resend Code'}
         </button>

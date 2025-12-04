@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import pool from '../db';
+import crypto from 'crypto';
+import { sendEmail } from '../utils/email';
 
 const registerSchema = z.object({
     email: z.string().email(),
@@ -15,9 +17,12 @@ const loginSchema = z.object({
     password: z.string()
 });
 
-const architectProfileSchema = z.object({
+const professionalApplicationSchema = z.object({
     full_name: z.string().min(1),
+    email: z.string().email(),
     phone_number: z.string().optional(),
+    role_id: z.number().int().optional(),
+    custom_role: z.string().optional(),
     bio: z.string().optional(),
     experience_years: z.number().int().nonnegative().optional(),
     portfolio_url: z.string().url().optional(),
@@ -42,8 +47,18 @@ export const register = async (req: Request, res: Response) => {
 
         const user = result.rows[0];
         
-        // Mock sending email
-        console.log(`[MOCK EMAIL] To: ${email}, Code: ${verificationCode}`);
+        // Send verification email
+        await sendEmail(
+            email,
+            'Verify your PlanMorph Account',
+            `Your verification code is: ${verificationCode}`,
+            `
+            <h1>Welcome to PlanMorph!</h1>
+            <p>Please verify your email address to activate your account.</p>
+            <p><strong>Your verification code is: ${verificationCode}</strong></p>
+            <p>This code will expire in 20 minutes.</p>
+            `
+        );
 
         const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
 
@@ -61,38 +76,72 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {
-    const { email, code } = req.body;
+    const { token } = req.body;
 
     try {
-        const result = await pool.query(
-            'SELECT * FROM users WHERE email = $1',
-            [email]
-        );
-        
-        const user = result.rows[0];
-        
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
+        const userId = decoded.id;
 
-        if (user.is_verified) {
-            return res.status(400).json({ message: 'Email already verified' });
-        }
-
-        if (user.verification_code !== code) {
-            return res.status(400).json({ message: 'Invalid verification code' });
-        }
-
-        if (new Date() > new Date(user.verification_expires_at)) {
-            return res.status(400).json({ message: 'Verification code expired' });
-        }
-
-        await pool.query(
-            'UPDATE users SET is_verified = TRUE, verification_code = NULL, verification_expires_at = NULL WHERE id = $1',
-            [user.id]
-        );
+        await pool.query('UPDATE users SET is_verified = TRUE WHERE id = $1', [userId]);
 
         res.json({ message: 'Email verified successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: 'Invalid or expired token' });
+    }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    try {
+        const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        if (userResult.rows.length === 0) {
+            // Don't reveal user existence
+            return res.json({ message: 'If an account exists, a reset link has been sent.' });
+        }
+
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 20 * 60 * 1000); // 20 minutes
+
+        await pool.query(
+            'INSERT INTO password_resets (email, token, user_type, expires_at) VALUES ($1, $2, $3, $4)',
+            [email, token, 'client', expiresAt]
+        );
+
+        // Mock email sending
+        const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
+        console.log(`[MOCK EMAIL] To: ${email}, Reset Link: ${resetLink}`);
+
+        res.json({ message: 'If an account exists, a reset link has been sent.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+    const { token, password } = req.body;
+
+    try {
+        const resetResult = await pool.query(
+            'SELECT * FROM password_resets WHERE token = $1 AND user_type = $2 AND expires_at > NOW()',
+            [token, 'client']
+        );
+
+        if (resetResult.rows.length === 0) {
+            return res.status(400).json({ message: 'Invalid or expired reset token' });
+        }
+
+        const email = resetResult.rows[0].email;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await pool.query('UPDATE users SET password_hash = $1 WHERE email = $2', [hashedPassword, email]);
+        
+        // Delete used token and any other tokens for this email
+        await pool.query('DELETE FROM password_resets WHERE email = $1 AND user_type = $2', [email, 'client']);
+
+        res.json({ message: 'Password reset successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
@@ -159,23 +208,7 @@ export const login = async (req: Request, res: Response) => {
             // Allow login but frontend should show verification banner
         }
 
-        if (user.role === 'architect') {
-            // Architects are verified by admin approval process, but we can double check status if needed
-            // The previous logic checked architect_profiles status. 
-            // With new flow, if they have an account, they are approved.
-            // But let's keep the profile check just in case.
-            const profileResult = await pool.query(
-                'SELECT status FROM architect_profiles WHERE user_id = $1',
-                [user.id]
-            );
-            
-            const profile = profileResult.rows[0];
-            if (!profile || profile.status !== 'approved') {
-                return res.status(403).json({ 
-                    message: 'Your account is pending verification. Please wait for admin approval.' 
-                });
-            }
-        }
+        // Architect role check removed as part of cleanup
 
         const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
 
@@ -212,6 +245,48 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 
         res.json(result.rows[0]);
     } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+export const submitProfessionalApplication = async (req: Request, res: Response) => {
+    try {
+        const data = professionalApplicationSchema.parse(req.body);
+
+        // Check if email already exists in applications or users
+        const userCheck = await pool.query('SELECT id FROM users WHERE email = $1', [data.email]);
+        if (userCheck.rows.length > 0) {
+            return res.status(409).json({ message: 'Email already associated with an account' });
+        }
+
+        const appCheck = await pool.query('SELECT id FROM professional_applications WHERE email = $1 AND status = \'pending\'', [data.email]);
+        if (appCheck.rows.length > 0) {
+            return res.status(409).json({ message: 'You already have a pending application' });
+        }
+
+        await pool.query(
+            `INSERT INTO professional_applications 
+            (full_name, email, phone_number, professional_role_id, custom_role_name, bio, experience_years, portfolio_url, cv_url, id_document_url) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+            [
+                data.full_name,
+                data.email,
+                data.phone_number,
+                data.role_id || null,
+                data.custom_role || null,
+                data.bio,
+                data.experience_years,
+                data.portfolio_url,
+                data.cv_url,
+                data.id_document_url
+            ]
+        );
+
+        res.status(201).json({ message: 'Application submitted successfully. It will be reviewed by an admin.' });
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({ errors: error.errors });
+        }
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
     }

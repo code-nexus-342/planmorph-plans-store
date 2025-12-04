@@ -25,6 +25,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=/api
     container_name: planmorph-frontend
     restart: unless-stopped
     networks:

@@ -135,7 +135,7 @@ const Checkout: React.FC = () => {
               <div className="flex justify-between">
                 <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
                 <Button onClick={handlePayment} isLoading={isLoading}>
-                  Pay ${design.price.toLocaleString()}
+                  Pay KES {design.price.toLocaleString()}
                 </Button>
               </div>
             </div>
@@ -174,17 +174,17 @@ const Checkout: React.FC = () => {
             <div className="space-y-3 mb-6 pb-6 border-b border-gray-200">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Subtotal</span>
-                <span className="font-bold text-architect-900">${design.price.toLocaleString()}</span>
+                <span className="font-bold text-architect-900">KES {design.price.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Tax (16% VAT)</span>
-                <span className="font-bold text-architect-900">${(design.price * 0.16).toLocaleString()}</span>
+                <span className="font-bold text-architect-900">KES {(design.price * 0.16).toLocaleString()}</span>
               </div>
             </div>
 
             <div className="flex justify-between text-lg font-bold text-architect-900 mb-8">
               <span>Total</span>
-              <span>${(design.price * 1.16).toLocaleString()}</span>
+              <span>KES {(design.price * 1.16).toLocaleString()}</span>
             </div>
 
             <div className="flex items-center gap-2 text-xs text-gray-500">

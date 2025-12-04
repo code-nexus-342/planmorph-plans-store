@@ -6,51 +6,133 @@
 
 @layer base {
   :root {
-    --color-bg-primary: #ffffff;
-    --color-bg-secondary: #f5f5f5;
-    --color-text-primary: #1a1a1a;
-    --color-text-secondary: #717171;
-    --color-accent-gold: #c5a059;
-    --color-accent-teal: #2d6a6a;
+    /* Default Theme: Vibrant Dark */
+    --color-primary: 0 224 198; /* Neon Cyan */
+    --color-secondary: 123 44 191; /* Deep Purple */
+    --color-accent: 255 0 128; /* Electric Pink */
+    --color-background: 5 5 5; /* Deepest Black */
+    --color-surface: 18 18 18; /* Dark Surface */
+    --color-text-primary: 255 255 255;
+    --color-text-secondary: 161 161 170;
+    --color-border: 39 39 42;
+    
+    /* Legacy mappings */
+    --color-bg-primary: var(--color-background);
+    --color-bg-secondary: var(--color-surface);
+    --color-accent-gold: var(--color-accent);
+    --color-accent-teal: var(--color-primary);
+  }
+
+  [data-theme='architectural-blueprints'] {
+    --color-primary: 28 78 128;
+    --color-secondary: 58 124 165;
+    --color-accent: 242 182 50;
+    --color-background: 247 249 252;
+    --color-surface: 255 255 255;
+    --color-text-primary: 26 26 26;
+    --color-text-secondary: 82 82 91;
+    --color-border: 227 230 235;
+  }
+
+  [data-theme='technical-neon'] {
+    --color-primary: 0 224 198;
+    --color-secondary: 0 136 255;
+    --color-accent: 255 184 0;
+    --color-background: 14 15 17;
+    --color-surface: 26 29 33;
+    --color-text-primary: 255 255 255;
+    --color-text-secondary: 110 116 124;
+    --color-border: 77 82 88;
+  }
+
+  [data-theme='premium-minimalist'] {
+    --color-primary: 42 42 42;
+    --color-secondary: 87 87 87;
+    --color-accent: 78 201 176;
+    --color-background: 255 255 255;
+    --color-surface: 242 242 242;
+    --color-text-primary: 42 42 42;
+    --color-text-secondary: 161 161 161;
+    --color-border: 214 214 214;
+  }
+
+  [data-theme='modern-studio-warmth'] {
+    --color-primary: 90 78 60;
+    --color-secondary: 199 180 153;
+    --color-accent: 232 168 124;
+    --color-background: 254 251 246;
+    --color-surface: 255 255 255;
+    --color-text-primary: 30 30 30;
+    --color-text-secondary: 175 170 164;
+    --color-border: 215 210 204;
+  }
+
+  [data-theme='dark-cad-pro'] {
+    --color-primary: 0 188 212;
+    --color-secondary: 128 222 234;
+    --color-accent: 255 193 7;
+    --color-background: 10 10 10;
+    --color-surface: 19 19 19;
+    --color-text-primary: 255 255 255;
+    --color-text-secondary: 71 71 71;
+    --color-border: 44 44 44;
   }
 
   body {
-    @apply bg-white text-architect-900 font-sans overflow-x-hidden;
-    background-image: none;
+    @apply bg-background text-white font-sans overflow-x-hidden antialiased;
+    background-image: radial-gradient(circle at 50% 0%, rgba(0, 224, 198, 0.05) 0%, transparent 50%);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-tight text-architect-900;
+    @apply font-heading tracking-tight text-white;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface border border-white/10 rounded-full hover:bg-primary/50 transition-colors;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary/30 text-white;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-white border border-gray-100 rounded-none shadow-card;
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-card;
   }
 
   .glass-button {
-    @apply px-8 py-4 rounded-none font-heading font-bold tracking-wide uppercase transition-all duration-300
-           bg-architect-900 text-white border border-architect-900
-           hover:bg-white hover:text-architect-900 hover:shadow-soft;
+    @apply px-8 py-4 rounded-full font-heading font-bold tracking-wide uppercase transition-all duration-300
+           bg-white/5 text-white border border-white/10 backdrop-blur-md
+           hover:bg-primary hover:border-primary hover:shadow-glow hover:-translate-y-1;
   }
 
   .glass-input {
-    @apply w-full bg-gray-50 border border-gray-200 rounded-none px-4 py-3 text-architect-900 placeholder-gray-400
-           focus:outline-none focus:border-accent-teal focus:ring-1 focus:ring-accent-teal transition-all;
+    @apply w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-white placeholder-text-secondary/50
+           focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300;
   }
 
   .text-gradient {
-    @apply text-architect-900;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent;
   }
   
   .nav-link {
-    @apply relative text-gray-500 hover:text-architect-900 transition-colors duration-300 font-medium;
+    @apply relative text-text-secondary hover:text-white transition-colors duration-300 font-medium;
   }
   
   .nav-link::after {
     content: '';
-    @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-teal transition-all duration-300;
+    @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 rounded-full;
   }
   
   .nav-link:hover::after {
@@ -58,18 +140,30 @@
   }
 
   .btn-primary {
-    @apply px-8 py-4 bg-architect-900 text-white font-heading font-bold tracking-wide uppercase 
-           hover:bg-accent-teal transition-all duration-300 shadow-soft;
+    @apply px-8 py-4 bg-primary text-background font-heading font-bold tracking-wide uppercase rounded-full
+           hover:bg-primary/90 hover:shadow-glow hover:-translate-y-1 transition-all duration-300;
   }
 
   .btn-secondary {
-    @apply px-8 py-4 bg-white text-architect-900 border border-architect-900 font-heading font-bold tracking-wide uppercase 
-           hover:bg-gray-50 transition-all duration-300;
+    @apply px-8 py-4 bg-transparent text-white border-2 border-white/20 font-heading font-bold tracking-wide uppercase rounded-full
+           hover:bg-white/10 hover:border-white/40 hover:shadow-lg hover:-translate-y-1 transition-all duration-300;
+  }
+  
+  .section-padding {
+    @apply py-20 md:py-32;
+  }
+  
+  .container-width {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 }
 
 @layer utilities {
   .text-shadow-none {
     text-shadow: none;
+  }
+  
+  .text-shadow-glow {
+    text-shadow: 0 0 20px rgba(0, 224, 198, 0.5);
   }
 }

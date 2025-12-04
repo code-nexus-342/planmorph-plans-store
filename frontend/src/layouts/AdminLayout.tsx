@@ -1,10 +1,19 @@
 import React from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { 
+  LayoutDashboard, 
+  Users, 
+  FileText, 
+  Settings, 
+  LogOut, 
+  Briefcase,
+  Layers
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import Button from '../components/ui/Button';
 
-const AdminLayout: React.FC = () => {
-  const { user, logout } = useAuth();
+const AdminLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+  const { logout } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -12,42 +21,97 @@ const AdminLayout: React.FC = () => {
     navigate('/login');
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
-        <div className="flex h-16 items-center justify-center border-b border-gray-200 dark:border-gray-800">
-          <Link to="/" className="text-xl font-bold text-gray-900 dark:text-white">
-            PlanMorph <span className="text-xs font-normal text-red-500">Admin</span>
-          </Link>
+      <aside className="w-64 bg-surface border-r border-white/10 flex flex-col fixed h-full z-20">
+        <div className="p-6 border-b border-white/10">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 bg-red-500/20 rounded-lg flex items-center justify-center">
+              <Settings className="text-red-500" size={20} />
+            </div>
+            <span className="text-xl font-heading font-bold text-white">Admin<span className="text-red-500">Panel</span></span>
+          </div>
         </div>
-        <nav className="p-4 space-y-2">
-          <Link to="/admin/dashboard" className="block rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
+
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          <Link 
+            to="/admin/dashboard" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              isActive('/admin/dashboard') 
+                ? 'bg-red-500/20 text-red-500 font-medium' 
+                : 'text-text-secondary hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <LayoutDashboard size={20} />
             Dashboard
           </Link>
-          <Link to="/admin/applications" className="block rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
+
+          <Link 
+            to="/admin/applications" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              isActive('/admin/applications') 
+                ? 'bg-red-500/20 text-red-500 font-medium' 
+                : 'text-text-secondary hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <FileText size={20} />
             Applications
           </Link>
-          <Link to="/admin/users" className="block rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
-            Users
+
+          <Link 
+            to="/admin/users" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              isActive('/admin/users') 
+                ? 'bg-red-500/20 text-red-500 font-medium' 
+                : 'text-text-secondary hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <Users size={20} />
+            Users & Pros
+          </Link>
+
+          <Link 
+            to="/admin/designs" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              isActive('/admin/designs') 
+                ? 'bg-red-500/20 text-red-500 font-medium' 
+                : 'text-text-secondary hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <Layers size={20} />
+            Designs
+          </Link>
+
+          <Link 
+            to="/admin/roles" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              isActive('/admin/roles') 
+                ? 'bg-red-500/20 text-red-500 font-medium' 
+                : 'text-text-secondary hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <Briefcase size={20} />
+            Job Roles
           </Link>
         </nav>
-        <div className="absolute bottom-0 w-64 border-t border-gray-200 p-4 dark:border-gray-800">
-          <div className="mb-4 flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold">
-                {user?.email?.charAt(0).toUpperCase()}
-            </div>
-            <div className="text-sm font-medium truncate">{user?.email}</div>
-          </div>
-          <Button variant="ghost" size="sm" className="w-full justify-start" onClick={handleLogout}>
+
+        <div className="p-4 border-t border-white/10">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-red-500/10 hover:text-red-500 w-full transition-all"
+          >
+            <LogOut size={20} />
             Logout
-          </Button>
+          </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto p-8">
-        <Outlet />
+      <main className="flex-1 ml-64 p-8">
+        {children || <Outlet />}
       </main>
     </div>
   );

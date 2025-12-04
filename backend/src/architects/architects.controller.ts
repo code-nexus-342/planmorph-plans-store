@@ -25,7 +25,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
             views: 0
         };
 
-        const designsCount = await pool.query('SELECT COUNT(*) FROM designs WHERE architect_id = $1', [userId]);
+        const designsCount = await pool.query('SELECT COUNT(*) FROM designs WHERE professional_id = $1', [userId]);
         stats.totalDesigns = parseInt(designsCount.rows[0].count);
 
         // In a real app, we'd query purchases table joined with designs
@@ -45,7 +45,7 @@ export const getMyDesigns = async (req: Request, res: Response) => {
             SELECT d.*, 
                    (SELECT url FROM design_media dm WHERE dm.design_id = d.id AND dm.is_preview = true LIMIT 1) as preview_url
             FROM designs d
-            WHERE d.architect_id = $1
+            WHERE d.professional_id = $1
             ORDER BY d.created_at DESC
         `, [userId]);
 
@@ -64,7 +64,8 @@ const createDesignSchema = z.object({
         bedrooms: z.number(),
         bathrooms: z.number(),
         sqft: z.number()
-    })
+    }),
+    category_id: z.number().int().positive()
 });
 
 export const createDesign = async (req: Request, res: Response) => {
@@ -74,8 +75,8 @@ export const createDesign = async (req: Request, res: Response) => {
         const data = createDesignSchema.parse(req.body);
 
         const result = await pool.query(
-            'INSERT INTO designs (architect_id, title, description, price, specifications, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [userId, data.title, data.description, data.price, data.specifications, 'draft']
+            'INSERT INTO designs (professional_id, title, description, price, specifications, status, category_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [userId, data.title, data.description, data.price, data.specifications, 'draft', data.category_id]
         );
 
         res.status(201).json(result.rows[0]);
@@ -97,7 +98,7 @@ export const getUploadUrl = async (req: Request, res: Response) => {
     }
 
     // Verify ownership of design
-    const designCheck = await pool.query('SELECT * FROM designs WHERE id = $1 AND architect_id = $2', [designId, userId]);
+    const designCheck = await pool.query('SELECT * FROM designs WHERE id = $1 AND professional_id = $2', [designId, userId]);
     if (designCheck.rows.length === 0) {
         return res.status(403).json({ message: 'Unauthorized access to this design' });
     }
@@ -127,7 +128,7 @@ export const addDesignMedia = async (req: Request, res: Response) => {
     const { designId, url, type, isPreview } = req.body;
 
      // Verify ownership
-    const designCheck = await pool.query('SELECT * FROM designs WHERE id = $1 AND architect_id = $2', [designId, userId]);
+    const designCheck = await pool.query('SELECT * FROM designs WHERE id = $1 AND professional_id = $2', [designId, userId]);
     if (designCheck.rows.length === 0) {
         return res.status(403).json({ message: 'Unauthorized access to this design' });
     }

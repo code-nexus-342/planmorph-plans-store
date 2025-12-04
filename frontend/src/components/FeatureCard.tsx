@@ -21,21 +21,21 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, descriptio
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
       transition={{ delay }}
-      className="group relative overflow-hidden bg-white p-8 border border-gray-100 hover:border-accent-teal hover:shadow-card transition-all duration-300"
+      className="group relative overflow-hidden glass-panel p-8 hover:border-primary hover:shadow-glow transition-all duration-300 rounded-2xl"
     >
       <div className="relative z-10">
         {/* Icon container */}
-        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center bg-gray-50 text-architect-900 group-hover:bg-accent-teal group-hover:text-white transition-colors duration-300">
+        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center bg-white/5 border border-white/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-background group-hover:scale-110 transition-all duration-300 shadow-lg">
           <Icon size={32} strokeWidth={1.5} />
         </div>
         
         {/* Title */}
-        <h3 className="mb-3 text-xl font-bold text-architect-900 font-heading">
+        <h3 className="mb-3 text-xl font-bold text-white font-heading group-hover:text-primary transition-colors">
           {title}
         </h3>
         
         {/* Description */}
-        <p className="text-gray-500 font-light leading-relaxed">
+        <p className="text-text-secondary font-light leading-relaxed">
           {description}
         </p>
       </div>

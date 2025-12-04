@@ -1,48 +1,153 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Search, PenTool, Home as HomeIcon, Building2, Grid, Layers, Briefcase, CheckCircle2 } from 'lucide-react';
-import AnimatedCounter from '../components/AnimatedCounter';
+import { Search, PenTool, Home as HomeIcon, Building2, Grid, Layers, Briefcase, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
 import FeatureCard from '../components/FeatureCard';
 import ProcessStep from '../components/ProcessStep';
 import { fadeInUp, staggerContainer } from '../utils/animations';
 
+import { getCategories } from '../services/categories.service';
+
 const Home: React.FC = () => {
-  return (
-    <div className="overflow-hidden bg-white">
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center pt-20 bg-gray-50">
-        <div className="absolute inset-0 z-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center grayscale" />
+  const [categories, setCategories] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error('Failed to fetch categories', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Map icon keys to components
+  const getIcon = (key: string) => {
+    const icons: any = {
+      Home: HomeIcon,
+      Layers: Layers,
+      Building2: Building2,
+      Grid: Grid,
+      Briefcase: Briefcase,
+    };
+    return icons[key] || HomeIcon;
+  };
+
+  const [userType, setUserType] = React.useState<'client' | 'professional' | null>(null);
+
+  if (!userType) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
         
-        <div className="container relative z-10 mx-auto px-4">
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-5xl md:text-7xl font-heading font-bold text-white mb-6">
+              Welcome to <span className="text-primary">PlanMorph</span>
+            </h1>
+            <p className="text-xl text-text-secondary mb-12 max-w-2xl mx-auto">
+              The premier marketplace for architectural designs. Please select how you would like to proceed.
+            </p>
+            
+            <div className="flex flex-col md:flex-row gap-8 justify-center items-center">
+              {/* Client Option */}
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                className="group cursor-pointer bg-surface/50 backdrop-blur-md border border-white/10 p-8 rounded-2xl w-full max-w-sm hover:border-primary/50 transition-all duration-300 shadow-2xl"
+                onClick={() => setUserType('client')}
+              >
+                <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
+                  <HomeIcon size={40} className="text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">I am a Client</h3>
+                <p className="text-text-secondary">
+                  I'm looking for architectural plans for my dream home or project.
+                </p>
+              </motion.div>
+
+              {/* Professional Option */}
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                className="group cursor-pointer bg-surface/50 backdrop-blur-md border border-white/10 p-8 rounded-2xl w-full max-w-sm hover:border-accent/50 transition-all duration-300 shadow-2xl"
+                onClick={() => {
+                    setUserType('professional');
+                    // Redirect to professional portal or show professional content
+                    // For now, we can just set state, but maybe we want to redirect to a specific professional landing?
+                    // The user said "receive necessary content". 
+                    // Let's just redirect to the professional apply/login flow if they choose professional, 
+                    // or show a professional-focused landing page.
+                    // For simplicity in this step, let's redirect to the apply page if they are new, or login.
+                    // But wait, the user said "dual domain app".
+                    // Let's keep it simple: if professional, go to /professional/apply (or a professional landing).
+                    window.location.href = '/professional'; 
+                }}
+              >
+                <div className="h-20 w-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-accent/20 transition-colors">
+                  <Briefcase size={40} className="text-accent" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">I am a Professional</h3>
+                <p className="text-text-secondary">
+                  I'm an architect, engineer, or surveyor looking to upload designs.
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden bg-background text-text-primary">
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background z-10" />
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop')] bg-cover bg-center opacity-20 animate-scale-up" />
+          
+          {/* Neon Glow Effects */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse-slow" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-[120px] animate-pulse-slow delay-1000" />
+        </div>
+        
+        <div className="container relative z-20 mx-auto px-4">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
-            className="mx-auto max-w-4xl text-center"
+            className="mx-auto max-w-5xl text-center"
           >
-            <motion.div variants={fadeInUp} className="mb-6 flex justify-center">
-              <span className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold tracking-widest text-architect-900 uppercase border border-architect-900/20 bg-white">
-                <Building2 size={14} />
-                Premium Architectural Plans
+            <motion.div variants={fadeInUp} className="mb-8 flex justify-center">
+              <span className="inline-flex items-center gap-2 px-6 py-2 text-sm font-bold tracking-[0.2em] text-primary uppercase border border-primary/20 bg-primary/5 backdrop-blur-md rounded-full shadow-glow animate-glow">
+                <Sparkles size={14} className="text-primary" />
+                Next Gen Architecture
               </span>
             </motion.div>
             
             <motion.h1 
               variants={fadeInUp}
-              className="mb-8 text-5xl font-heading font-bold tracking-tight text-architect-900 sm:text-7xl leading-tight"
+              className="mb-8 text-6xl md:text-8xl font-heading font-bold tracking-tighter text-white leading-[1.1]"
             >
-              PlanMorph Plans Store <br />
-              <span className="text-gray-500 font-light italic">
-                Ready Made & Custom Designs
+              Design Your <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent animate-gradient-x">
+                Dream Reality
               </span>
             </motion.h1>
             
             <motion.p 
               variants={fadeInUp}
-              className="mb-12 text-xl text-gray-600 sm:text-2xl max-w-2xl mx-auto font-light leading-relaxed"
+              className="mb-12 text-xl md:text-2xl text-text-secondary max-w-3xl mx-auto font-light leading-relaxed"
             >
-              Discover a curated collection of architectural masterpieces. From modern villas to commercial complexes, find the perfect blueprint for your vision.
+              A curated collection of architectural masterpieces. From modern villas to commercial complexes, find the blueprint that speaks to your vision.
             </motion.p>
             
             <motion.div 
@@ -50,97 +155,84 @@ const Home: React.FC = () => {
               className="flex flex-col items-center justify-center gap-6 sm:flex-row"
             >
               <Link to="/designs">
-                <button className="btn-primary min-w-[200px]">
-                  Browse Plans
+                <button className="px-8 py-4 bg-primary text-background font-heading font-bold tracking-wide uppercase rounded-full hover:bg-primary/90 hover:shadow-glow hover:-translate-y-1 transition-all duration-300 group">
+                  Browse Collection
+                  <ArrowRight className="inline-block ml-2 group-hover:translate-x-1 transition-transform" size={20} />
                 </button>
               </Link>
               <Link to="/custom-design">
-                <button className="btn-secondary min-w-[200px]">
-                  Request Custom Design
+                <button className="px-8 py-4 bg-transparent text-white border-2 border-white/20 font-heading font-bold tracking-wide uppercase rounded-full hover:bg-white/10 hover:border-white/40 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+                  Custom Request
                 </button>
               </Link>
             </motion.div>
           </motion.div>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-text-secondary"
+        >
+          <div className="w-6 h-10 border-2 border-text-secondary/30 rounded-full flex justify-center p-1">
+            <div className="w-1 h-2 bg-primary rounded-full animate-scroll" />
+          </div>
+        </motion.div>
       </section>
 
       {/* Search & Categories Section */}
-      <section className="relative z-20 -mt-24 pb-24">
+      <section className="relative z-30 -mt-32 pb-32">
         <div className="container mx-auto px-4">
           <motion.div 
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
-            className="bg-white shadow-float p-8 max-w-5xl mx-auto border-t-4 border-accent-teal"
+            className="bg-surface/80 backdrop-blur-xl border border-white/10 p-8 md:p-12 max-w-6xl mx-auto rounded-3xl shadow-2xl"
           >
             {/* Search Bar */}
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <div className="flex flex-col md:flex-row gap-4 mb-12">
+              <div className="flex-1 relative group">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-primary transition-colors" size={24} />
                 <input 
                   type="text" 
                   placeholder="Search by style, plot size, or budget..." 
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 focus:border-accent-teal focus:outline-none transition-colors"
+                  className="w-full pl-16 pr-6 py-5 bg-white/5 border border-white/10 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all text-lg text-white placeholder-text-secondary/50 backdrop-blur-sm"
                 />
               </div>
-              <button className="bg-architect-900 text-white px-8 py-4 font-bold uppercase tracking-wide hover:bg-accent-teal transition-colors">
+              <button className="bg-primary text-background px-10 py-5 font-bold uppercase tracking-wide hover:bg-primary/90 transition-all rounded-xl shadow-glow hover:-translate-y-1">
                 Search
               </button>
             </div>
 
             {/* Categories */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {[
-                { name: 'Villas', icon: HomeIcon },
-                { name: 'Bungalows', icon: HomeIcon },
-                { name: 'Maisonettes', icon: Layers },
-                { name: 'Apartments', icon: Building2 },
-                { name: 'Extensions', icon: Grid },
-                { name: 'Commercial', icon: Briefcase },
-              ].map((cat, idx) => (
-                <div key={idx} className="flex flex-col items-center justify-center p-4 border border-gray-100 hover:border-accent-teal hover:bg-gray-50 cursor-pointer transition-all group">
-                  <cat.icon className="mb-2 text-gray-400 group-hover:text-accent-teal transition-colors" size={24} />
-                  <span className="text-sm font-bold text-architect-900 uppercase tracking-wide">{cat.name}</span>
-                </div>
-              ))}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+              {categories.map((cat, idx) => {
+                const Icon = getIcon(cat.icon_key);
+                return (
+                  <div key={idx} className="flex flex-col items-center justify-center p-6 border border-white/5 bg-white/5 rounded-xl hover:border-primary hover:bg-white/10 hover:shadow-glow cursor-pointer transition-all duration-300 group backdrop-blur-sm">
+                    <Icon className="mb-3 text-text-secondary group-hover:text-primary group-hover:scale-110 transition-all duration-300" size={28} />
+                    <span className="text-xs font-bold text-white uppercase tracking-widest group-hover:text-primary transition-colors">{cat.name}</span>
+                  </div>
+                );
+              })}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 border-y border-gray-100 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <div className="text-center">
-              <AnimatedCounter end={1500} suffix="+" className="text-4xl font-heading font-bold text-architect-900" />
-              <p className="mt-2 text-xs font-bold text-gray-500 uppercase tracking-widest">Ready Designs</p>
-            </div>
-            <div className="text-center border-l border-gray-200">
-              <AnimatedCounter end={350} suffix="+" className="text-4xl font-heading font-bold text-architect-900" />
-              <p className="mt-2 text-xs font-bold text-gray-500 uppercase tracking-widest">Licensed Architects</p>
-            </div>
-            <div className="text-center border-l border-gray-200">
-              <AnimatedCounter end={5000} suffix="+" className="text-4xl font-heading font-bold text-architect-900" />
-              <p className="mt-2 text-xs font-bold text-gray-500 uppercase tracking-widest">Successful Builds</p>
-            </div>
-            <div className="text-center border-l border-gray-200">
-              <AnimatedCounter end={100} suffix="%" className="text-4xl font-heading font-bold text-architect-900" />
-              <p className="mt-2 text-xs font-bold text-gray-500 uppercase tracking-widest">Satisfaction</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Features Section */}
-      <section className="py-32 bg-white">
-        <div className="container mx-auto px-4">
+      <section className="py-32 bg-background relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 -skew-x-12 translate-x-20 blur-3xl" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="mb-20 text-center max-w-3xl mx-auto">
-            <h2 className="mb-6 text-4xl font-heading font-bold text-architect-900 sm:text-5xl">
-              Why Choose <span className="text-accent-teal">PlanMorph?</span>
+            <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">Why Choose Us</span>
+            <h2 className="mb-6 text-4xl md:text-5xl font-heading font-bold text-white">
+              Professional Grade <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary">Architecture</span>
             </h2>
-            <p className="text-xl text-gray-500 font-light">
-              We provide professional-grade architectural drawings that are ready for construction.
+            <p className="text-xl text-text-secondary font-light leading-relaxed">
+              We provide construction-ready drawings that meet all regulatory standards, designed by licensed professionals.
             </p>
           </div>
 
@@ -168,16 +260,17 @@ const Home: React.FC = () => {
       </section>
 
       {/* Process Section */}
-      <section className="py-32 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="mb-20 text-center">
-            <span className="mb-4 block font-mono text-sm font-bold uppercase tracking-widest text-accent-teal">How It Works</span>
-            <h2 className="text-4xl font-heading font-bold text-architect-900 sm:text-5xl">
-              From Concept to <span className="text-accent-gold">Construction</span>
+      <section className="py-32 bg-surface relative overflow-hidden border-y border-white/5">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1631679706909-1844bbd07221?q=80&w=2592&auto=format&fit=crop')] bg-cover bg-center opacity-5 mix-blend-overlay" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="mb-24 text-center">
+            <span className="mb-4 block font-mono text-sm font-bold uppercase tracking-widest text-primary">How It Works</span>
+            <h2 className="text-4xl md:text-6xl font-heading font-bold text-white">
+              From Concept to <span className="text-accent">Reality</span>
             </h2>
           </div>
 
-          <div className="mx-auto max-w-5xl space-y-16">
+          <div className="mx-auto max-w-5xl space-y-24">
             <ProcessStep 
               number={1}
               icon={Search}
@@ -202,27 +295,29 @@ const Home: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 bg-architect-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2301&auto=format&fit=crop')] bg-cover bg-center grayscale mix-blend-overlay" />
-        
-        <div className="container relative z-10 mx-auto px-4 text-center">
-          <h2 className="mb-8 text-5xl font-heading font-bold sm:text-6xl">
-            Ready to Start Your Project?
-          </h2>
-          <p className="mx-auto mb-12 max-w-2xl text-xl text-gray-400">
-            Whether you need a ready-made plan or a custom design, we have the expertise to bring your vision to life.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <Link to="/designs">
-              <button className="px-10 py-5 bg-white text-architect-900 font-bold text-xl tracking-wide hover:bg-gray-100 transition-colors">
-                View Collection
-              </button>
-            </Link>
-            <Link to="/custom-design">
-              <button className="px-10 py-5 border border-white text-white font-bold text-xl tracking-wide hover:bg-white hover:text-architect-900 transition-colors">
-                Custom Request
-              </button>
-            </Link>
+      <section className="py-32 bg-background relative overflow-hidden">
+        <div className="container relative z-10 mx-auto px-4">
+          <div className="max-w-5xl mx-auto bg-surface/50 backdrop-blur-lg rounded-3xl p-12 md:p-20 text-center relative overflow-hidden border border-white/10 shadow-2xl">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
+            
+            <h2 className="mb-8 text-4xl md:text-6xl font-heading font-bold text-white">
+              Ready to Start?
+            </h2>
+            <p className="mx-auto mb-12 max-w-2xl text-xl text-text-secondary font-light">
+              Whether you need a ready-made plan or a custom design, we have the expertise to bring your vision to life.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              <Link to="/designs">
+                <button className="px-8 py-4 bg-white text-background font-heading font-bold tracking-wide uppercase rounded-full hover:bg-primary hover:text-background hover:shadow-glow hover:-translate-y-1 transition-all duration-300 shadow-xl">
+                  View Collection
+                </button>
+              </Link>
+              <Link to="/custom-design">
+                <button className="px-8 py-4 bg-transparent text-white border-2 border-white/20 font-heading font-bold tracking-wide uppercase rounded-full hover:bg-white/10 hover:border-white/40 hover:-translate-y-1 transition-all duration-300">
+                  Custom Request
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

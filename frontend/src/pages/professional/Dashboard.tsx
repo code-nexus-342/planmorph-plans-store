@@ -1,245 +1,155 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { LayoutDashboard, Upload, FileText, DollarSign, Eye, TrendingUp, Plus } from 'lucide-react';
+import Button from '../../components/ui/Button';
+import { getProfessionalDashboardStats } from '../../services/professionals.service';
 import { useAuth } from '../../context/AuthContext';
-import { useProfessionalRoles, DashboardWidget } from '../../context/ProfessionalRoleContext';
-import StatCard from '../../components/ui/StatCard';
-import api from '../../services/api';
 
-// Helper to get nested value from object using dot notation
-const getNestedValue = (obj: any, path: string): any => {
-  return path.split('.').reduce((current, key) => current?.[key], obj);
-};
-
-// Helper to format values based on render type
-const formatValue = (value: any, render?: string): string => {
-  if (value === null || value === undefined) return '-';
-  
-  switch (render) {
-    case 'date':
-      return new Date(value).toLocaleDateString();
-    case 'currency':
-      return `$${Number(value).toLocaleString()}`;
-    case 'status':
-    case 'badge':
-      return value;
-    default:
-      return String(value);
-  }
-};
-
-// Render a stat widget
-const StatWidget: React.FC<{ widget: DashboardWidget; data: any }> = ({ widget, data }) => {
-  const { getIconComponent } = useProfessionalRoles();
-  const value = getNestedValue(data, widget.dataKey);
-  const Icon = widget.icon ? getIconComponent(widget.icon) : undefined;
-  
-  return (
-    <StatCard
-      title={widget.title}
-      value={formatValue(value, widget.type === 'stat' ? undefined : 'currency')}
-      icon={Icon}
-      color={widget.color}
-      subtitle={widget.subtitle}
-    />
-  );
-};
-
-// Render a table widget
-const TableWidget: React.FC<{ widget: DashboardWidget; data: any }> = ({ widget, data }) => {
-  const tableData = getNestedValue(data, widget.dataKey) || [];
-  
-  if (!widget.columns) return null;
-  
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-        {widget.title}
-      </h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-          <thead>
-            <tr>
-              {widget.columns.map((col) => (
-                <th
-                  key={col.key}
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {col.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-            {tableData.length > 0 ? (
-              tableData.slice(0, 10).map((row: any, idx: number) => (
-                <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-900">
-                  {widget.columns!.map((col) => {
-                    const cellValue = row[col.key];
-                    const formattedValue = formatValue(cellValue, col.render);
-                    
-                    return (
-                      <td key={col.key} className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                        {col.render === 'status' || col.render === 'badge' ? (
-                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            cellValue === 'approved' || cellValue === 'completed' || cellValue === 'income'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                              : cellValue === 'pending' || cellValue === 'in_progress'
-                              ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400'
-                              : cellValue === 'expense'
-                              ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                              : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-                          }`}>
-                            {formattedValue}
-                          </span>
-                        ) : (
-                          formattedValue
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={widget.columns.length} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                  No data available
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-// Render a list widget
-const ListWidget: React.FC<{ widget: DashboardWidget; data: any }> = ({ widget, data }) => {
-  const listData = getNestedValue(data, widget.dataKey) || [];
-  
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-        {widget.title}
-      </h2>
-      <div className="space-y-3">
-        {listData.length > 0 ? (
-          listData.slice(0, 10).map((item: any, idx: number) => (
-            <div key={idx} className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {item.employee_name || item.title || item.name || 'Item'}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {item.description || item.position || item.location || ''}
-                </p>
-              </div>
-              {item.amount && (
-                <div className="text-right">
-                  <p className="font-bold text-orange-600">${Number(item.amount).toLocaleString()}</p>
-                  {item.created_at && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(item.created_at).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500 dark:text-gray-400 py-8">
-            No items to display
-          </p>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Main Generic Dashboard Component
 const ProfessionalDashboard: React.FC = () => {
   const { user } = useAuth();
-  const { getRoleConfig, loading: rolesLoading } = useProfessionalRoles();
-  const [dashboardData, setDashboardData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const roleConfig = getRoleConfig(user?.role || '');
+  const [stats, setStats] = useState({
+    totalDesigns: 0,
+    totalSales: 0,
+    views: 0,
+    role: ''
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboard = async () => {
-      if (!roleConfig) {
-        setError('Role configuration not found');
-        setLoading(false);
-        return;
-      }
-
+    const fetchStats = async () => {
       try {
-        const response = await api.get(`${roleConfig.apiEndpoint}/dashboard`);
-        setDashboardData(response.data);
-      } catch (err: any) {
-        console.error('Failed to fetch dashboard', err);
-        setError(err.response?.data?.message || 'Failed to load dashboard');
+        const data = await getProfessionalDashboardStats();
+        setStats(data);
+      } catch (error) {
+        console.error('Failed to fetch dashboard stats:', error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    fetchDashboard();
-  }, [roleConfig]);
+    fetchStats();
+  }, []);
 
-  if (loading || rolesLoading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading dashboard...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
       </div>
     );
   }
-
-  if (error || !roleConfig) {
-    return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-950/20">
-        <p className="text-red-600 dark:text-red-400">{error || 'Configuration error'}</p>
-      </div>
-    );
-  }
-
-  // Separate widgets by type
-  const statWidgets = roleConfig.widgets.filter(w => w.type === 'stat');
-  const tableWidgets = roleConfig.widgets.filter(w => w.type === 'table');
-  const listWidgets = roleConfig.widgets.filter(w => w.type === 'list');
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {roleConfig.displayName} Dashboard
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Overview and performance metrics
-        </p>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-heading font-bold text-white">Dashboard</h1>
+          <p className="text-text-secondary">Welcome back, {user?.full_name}</p>
+        </div>
+        <Link to="/professional/upload">
+          <Button className="bg-accent text-background hover:bg-accent/90 shadow-glow">
+            <Plus size={18} className="mr-2" />
+            Upload New Design
+          </Button>
+        </Link>
       </div>
 
-      {/* Stat Widgets */}
-      {statWidgets.length > 0 && (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {statWidgets.map((widget) => (
-            <StatWidget key={widget.id} widget={widget} data={dashboardData} />
-          ))}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass-panel p-6 rounded-2xl border border-white/10 bg-surface/50 hover:border-primary/30 transition-colors group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-10 w-10 bg-blue-500/20 rounded-lg flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
+              <FileText className="text-blue-400" size={20} />
+            </div>
+            <span className="text-xs font-medium text-text-secondary bg-white/5 px-2 py-1 rounded-full border border-white/5">Total</span>
+          </div>
+          <h3 className="text-3xl font-bold text-white mb-1">{stats.totalDesigns}</h3>
+          <p className="text-sm text-text-secondary">Uploaded Designs</p>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass-panel p-6 rounded-2xl border border-white/10 bg-surface/50 hover:border-primary/30 transition-colors group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-10 w-10 bg-green-500/20 rounded-lg flex items-center justify-center group-hover:bg-green-500/30 transition-colors">
+              <DollarSign className="text-green-400" size={20} />
+            </div>
+            <span className="text-xs font-medium text-text-secondary bg-white/5 px-2 py-1 rounded-full border border-white/5">Revenue</span>
+          </div>
+          <h3 className="text-3xl font-bold text-white mb-1">KES {stats.totalSales.toLocaleString()}</h3>
+          <p className="text-sm text-text-secondary">Total Earnings</p>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="glass-panel p-6 rounded-2xl border border-white/10 bg-surface/50 hover:border-primary/30 transition-colors group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-10 w-10 bg-purple-500/20 rounded-lg flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
+              <Eye className="text-purple-400" size={20} />
+            </div>
+            <span className="text-xs font-medium text-text-secondary bg-white/5 px-2 py-1 rounded-full border border-white/5">Analytics</span>
+          </div>
+          <h3 className="text-3xl font-bold text-white mb-1">{stats.views}</h3>
+          <p className="text-sm text-text-secondary">Total Views</p>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="glass-panel p-6 rounded-2xl border border-white/10 bg-surface/50 hover:border-primary/30 transition-colors group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-10 w-10 bg-orange-500/20 rounded-lg flex items-center justify-center group-hover:bg-orange-500/30 transition-colors">
+              <TrendingUp className="text-orange-400" size={20} />
+            </div>
+            <span className="text-xs font-medium text-text-secondary bg-white/5 px-2 py-1 rounded-full border border-white/5">Status</span>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-1">{stats.role || 'Professional'}</h3>
+          <p className="text-sm text-text-secondary">Current Role</p>
+        </motion.div>
+      </div>
+
+      {/* Quick Actions / Recent Activity Placeholder */}
+      <div className="grid md:grid-cols-3 gap-8">
+        <div className="md:col-span-2 glass-panel p-6 rounded-2xl border border-white/10 bg-surface/50">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-white">Recent Uploads</h2>
+            <Link to="/professional/designs" className="text-sm text-accent hover:text-accent/80">View All</Link>
+          </div>
+          <div className="text-center py-12 text-text-secondary">
+            <p>No recent activity to display.</p>
+            <Link to="/professional/upload" className="text-accent hover:underline mt-2 inline-block">Upload your first design</Link>
+          </div>
         </div>
-      )}
 
-      {/* List Widgets */}
-      {listWidgets.map((widget) => (
-        <ListWidget key={widget.id} widget={widget} data={dashboardData} />
-      ))}
-
-      {/* Table Widgets */}
-      {tableWidgets.map((widget) => (
-        <TableWidget key={widget.id} widget={widget} data={dashboardData} />
-      ))}
+        <div className="glass-panel p-6 rounded-2xl border border-white/10 bg-surface/50">
+          <h2 className="text-xl font-bold text-white mb-6">Quick Actions</h2>
+          <div className="space-y-3">
+            <Link to="/professional/upload">
+              <Button variant="outline" className="w-full justify-start border-white/10 hover:bg-white/5 text-left">
+                <Upload size={16} className="mr-2" /> Upload Design
+              </Button>
+            </Link>
+            <Link to="/professional/profile">
+              <Button variant="outline" className="w-full justify-start border-white/10 hover:bg-white/5 text-left">
+                <LayoutDashboard size={16} className="mr-2" /> Edit Profile
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

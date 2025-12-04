@@ -47,18 +47,18 @@ const ArchitectApply: React.FC = () => {
 
   if (success) {
     return (
-      <div className="text-center p-8 bg-white border border-gray-200 shadow-soft max-w-md mx-auto mt-20">
+      <div className="text-center p-8 glass-panel border border-white/10 shadow-glow max-w-md mx-auto mt-20 rounded-2xl">
         <div className="flex justify-center mb-6">
-          <div className="h-16 w-16 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+          <div className="h-16 w-16 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 border border-green-500/30">
             <HardHat size={32} />
           </div>
         </div>
-        <h2 className="text-2xl font-heading font-bold text-architect-900 mb-4">Application Submitted!</h2>
-        <p className="text-gray-500 mb-8">
+        <h2 className="text-2xl font-heading font-bold text-white mb-4">Application Submitted!</h2>
+        <p className="text-text-secondary mb-8">
           Thank you for applying to join PlanMorph. Our team will review your application and contact you via email with your login credentials once approved.
         </p>
         <Link to="/">
-          <Button className="w-full">
+          <Button className="w-full bg-primary text-background hover:bg-primary/90 shadow-glow border-none">
             Return Home
           </Button>
         </Link>
@@ -68,18 +68,18 @@ const ArchitectApply: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto mt-10 mb-20 px-4">
-      <Link to="/login" className="inline-flex items-center text-gray-400 hover:text-architect-900 mb-8 transition-colors">
+      <Link to="/login" className="inline-flex items-center text-text-secondary hover:text-white mb-8 transition-colors">
         <ArrowLeft size={20} className="mr-2" /> Back to Login
       </Link>
 
-      <div className="bg-white border border-gray-200 shadow-soft p-8 md:p-12">
+      <div className="glass-panel border border-white/10 shadow-glow p-8 md:p-12 rounded-2xl">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-heading font-bold text-architect-900 mb-2">Join as a Professional</h2>
-          <p className="text-gray-500">Apply to become a verified architect or engineer on PlanMorph</p>
+          <h2 className="text-3xl font-heading font-bold text-white mb-2">Join as a Professional</h2>
+          <p className="text-text-secondary">Apply to become a verified architect or engineer on PlanMorph</p>
         </div>
 
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-100 p-4 text-sm text-red-600 text-center">
+          <div className="mb-6 bg-red-500/20 border border-red-500/30 p-4 text-sm text-red-400 text-center rounded-lg">
             {error}
           </div>
         )}
@@ -120,13 +120,13 @@ const ArchitectApply: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Professional Bio</label>
+            <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Professional Bio</label>
             <textarea
               name="bio"
               value={formData.bio}
               onChange={handleChange}
               rows={4}
-              className="w-full rounded-none border border-gray-200 bg-gray-50 px-4 py-2 text-architect-900 placeholder-gray-400 focus:border-accent-teal focus:outline-none focus:ring-1 focus:ring-accent-teal transition-all"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white placeholder-text-secondary/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
               placeholder="Tell us about your expertise..."
             />
           </div>
@@ -161,7 +161,7 @@ const ArchitectApply: React.FC = () => {
 
           <Button 
             type="submit" 
-            className="w-full mt-4" 
+            className="w-full mt-4 bg-primary text-background hover:bg-primary/90 shadow-glow border-none" 
             isLoading={isLoading}
           >
             Submit Application

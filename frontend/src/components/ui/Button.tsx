@@ -16,13 +16,13 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-heading font-bold tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none uppercase rounded-none';
+  const baseStyles = 'inline-flex items-center justify-center font-heading font-bold tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none uppercase rounded-full backdrop-blur-sm';
   
   const variants = {
-    primary: 'bg-architect-900 text-white hover:bg-accent-teal hover:shadow-soft border border-transparent',
-    secondary: 'bg-white text-architect-900 border border-architect-900 hover:bg-gray-50',
-    outline: 'border-2 border-architect-900 text-architect-900 bg-transparent hover:bg-architect-900 hover:text-white',
-    ghost: 'text-gray-500 hover:text-architect-900 hover:bg-gray-100',
+    primary: 'bg-primary text-background hover:bg-primary/90 hover:shadow-glow hover:-translate-y-1 border border-transparent',
+    secondary: 'bg-white/10 text-white border border-white/20 hover:bg-white/20 hover:shadow-lg hover:-translate-y-1',
+    outline: 'border-2 border-white/20 text-white bg-transparent hover:bg-white/10 hover:border-white/40',
+    ghost: 'text-text-secondary hover:text-white hover:bg-white/5',
     danger: 'bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-900/20',
   };
 

@@ -4,9 +4,12 @@ import { useAuth } from '../context/AuthContext';
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];
+  requiredRole?: string;
+  redirectPath?: string;
+  children?: React.ReactNode;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, requiredRole, redirectPath = '/login', children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -18,14 +21,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={redirectPath} replace />;
   }
 
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+  const roles = allowedRoles || (requiredRole ? [requiredRole] : undefined);
+
+  if (roles && user && !roles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
 
-  return <Outlet />;
+  return children ? <>{children}</> : <Outlet />;
 };
 
 export default ProtectedRoute;

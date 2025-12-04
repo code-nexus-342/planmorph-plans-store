@@ -45,29 +45,29 @@ const Purchases: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center bg-white">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-accent-teal"></div>
+      <div className="flex h-64 items-center justify-center bg-background">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 pt-24">
-      <div className="mb-8 flex items-center gap-3 border-b border-gray-100 pb-6">
-        <Package className="text-accent-teal" size={32} />
-        <h1 className="text-4xl font-heading font-bold text-architect-900">My Library</h1>
+    <div className="container mx-auto px-4 py-12 pt-24 min-h-screen bg-background">
+      <div className="mb-8 flex items-center gap-3 border-b border-white/10 pb-6">
+        <Package className="text-primary" size={32} />
+        <h1 className="text-4xl font-heading font-bold text-white">My Library</h1>
       </div>
 
       {purchases.length === 0 ? (
-        <div className="text-center py-32 bg-gray-50 border border-gray-100">
-          <div className="mb-6 rounded-full bg-white p-8 border border-gray-200 shadow-sm inline-block">
-            <Package size={48} className="text-gray-300" />
+        <div className="text-center py-32 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm">
+          <div className="mb-6 rounded-full bg-white/10 p-8 border border-white/20 shadow-glow inline-block">
+            <Package size={48} className="text-text-secondary" />
           </div>
-          <h3 className="text-2xl font-heading font-bold text-architect-900 mb-2">No blueprints acquired</h3>
-          <p className="text-gray-500 mb-8">You haven't purchased any designs yet.</p>
+          <h3 className="text-2xl font-heading font-bold text-white mb-2">No blueprints acquired</h3>
+          <p className="text-text-secondary mb-8">You haven't purchased any designs yet.</p>
           <Button 
             onClick={() => window.location.href = '/designs'}
-            className="px-8 py-3"
+            className="px-8 py-3 bg-primary text-background hover:bg-primary/90 shadow-glow border-none"
           >
             Browse Designs
           </Button>
@@ -79,7 +79,7 @@ const Purchases: React.FC = () => {
               key={purchase.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white border border-gray-200 shadow-soft overflow-hidden transition-all duration-300 hover:border-accent-teal"
+              className="glass-panel overflow-hidden transition-all duration-300 hover:border-primary"
             >
               <div className="p-6">
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -88,25 +88,25 @@ const Purchases: React.FC = () => {
                       <img
                         src={purchase.preview_url}
                         alt={purchase.title}
-                        className="h-24 w-32 object-cover border border-gray-200"
+                        className="h-24 w-32 object-cover border border-white/10 rounded-lg"
                       />
                     ) : (
-                      <div className="h-24 w-32 bg-gray-100 border border-gray-200 flex items-center justify-center">
-                        <FileText className="text-gray-400" />
+                      <div className="h-24 w-32 bg-white/5 border border-white/10 flex items-center justify-center rounded-lg">
+                        <FileText className="text-text-secondary" />
                       </div>
                     )}
                     <div>
-                      <h3 className="text-xl font-heading font-bold text-architect-900 mb-1">
+                      <h3 className="text-xl font-heading font-bold text-white mb-1">
                         {purchase.title}
                       </h3>
-                      <p className="text-sm text-gray-500 mb-2">
+                      <p className="text-sm text-text-secondary mb-2">
                         Purchased on {new Date(purchase.created_at).toLocaleDateString()}
                       </p>
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 text-xs font-bold bg-green-100 text-green-700 uppercase tracking-wider">
+                        <span className="px-2 py-0.5 text-xs font-bold bg-green-500/20 text-green-400 uppercase tracking-wider border border-green-500/30 rounded">
                           PAID
                         </span>
-                        <span className="text-architect-900 font-bold">${purchase.amount}</span>
+                        <span className="text-white font-bold">KES {purchase.amount}</span>
                       </div>
                     </div>
                   </div>
@@ -114,7 +114,7 @@ const Purchases: React.FC = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    className={`min-w-[140px] ${expandedId === purchase.design_id ? 'bg-architect-900 text-white' : ''}`}
+                    className={`min-w-[140px] border-white/20 text-white hover:bg-white/10 ${expandedId === purchase.design_id ? 'bg-primary text-background border-primary hover:bg-primary/90' : ''}`}
                     onClick={() => handleViewFiles(purchase.design_id)}
                   >
                     {expandedId === purchase.design_id ? (
@@ -133,9 +133,9 @@ const Purchases: React.FC = () => {
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                     >
-                      <div className="mt-6 border-t border-gray-100 pt-6">
-                        <h4 className="mb-4 font-bold text-architect-900 flex items-center gap-2 text-sm uppercase tracking-wider">
-                          <Download size={18} className="text-accent-teal" /> Available Downloads
+                      <div className="mt-6 border-t border-white/10 pt-6">
+                        <h4 className="mb-4 font-bold text-white flex items-center gap-2 text-sm uppercase tracking-wider">
+                          <Download size={18} className="text-primary" /> Available Downloads
                         </h4>
                         {files[purchase.design_id] && files[purchase.design_id].length > 0 ? (
                           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -145,25 +145,25 @@ const Purchases: React.FC = () => {
                                 href={file.downloadUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-between border border-gray-200 bg-gray-50 p-4 hover:bg-white hover:border-accent-teal hover:shadow-sm transition-all group"
+                                className="flex items-center justify-between border border-white/10 bg-white/5 p-4 hover:bg-white/10 hover:border-primary hover:shadow-glow transition-all group rounded-lg backdrop-blur-sm"
                               >
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white border border-gray-200 text-architect-900 group-hover:text-accent-teal transition-colors">
+                                    <div className="p-2 bg-white/5 border border-white/10 text-white group-hover:text-primary transition-colors rounded">
                                         <FileText size={20} />
                                     </div>
                                     <div>
-                                        <span className="block text-sm font-bold text-architect-900 group-hover:text-accent-teal transition-colors">
+                                        <span className="block text-sm font-bold text-white group-hover:text-primary transition-colors">
                                         {file.type.toUpperCase()}
                                         </span>
-                                        <span className="text-xs text-gray-500">Technical Document</span>
+                                        <span className="text-xs text-text-secondary">Technical Document</span>
                                     </div>
                                 </div>
-                                <Download className="h-4 w-4 text-gray-400 group-hover:text-accent-teal" />
+                                <Download className="h-4 w-4 text-text-secondary group-hover:text-primary" />
                               </a>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-sm text-gray-500 italic">No files available for download at this time.</p>
+                          <p className="text-sm text-text-secondary italic">No files available for download at this time.</p>
                         )}
                       </div>
                     </motion.div>

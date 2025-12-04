@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserPlus } from 'lucide-react';
+
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { register as registerApi } from '../services/auth.service';
@@ -29,19 +29,19 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-heading font-bold text-architect-900 mb-2">Join the Future</h2>
-        <p className="text-gray-500">Create your account to start building</p>
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-white mb-1">Create Account</h2>
+        <p className="text-sm text-text-secondary">Join us to start building</p>
       </div>
 
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-100 p-4 text-sm text-red-600 text-center">
+        <div className="bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400 text-center rounded-lg">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
 
         <Input
           label="Email"
@@ -49,6 +49,7 @@ const Register: React.FC = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          className="bg-white/5 border-white/10 text-white placeholder-text-secondary/50 focus:border-primary focus:ring-primary rounded-lg"
         />
         <Input
           label="Password"
@@ -57,19 +58,20 @@ const Register: React.FC = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={8}
+          className="bg-white/5 border-white/10 text-white placeholder-text-secondary/50 focus:border-primary focus:ring-primary rounded-lg"
         />
         <Button 
           type="submit" 
-          className="w-full h-12 text-lg shadow-soft" 
+          className="w-full h-10 text-base shadow-glow bg-primary text-background hover:bg-primary/90 font-bold rounded-lg border-none" 
           isLoading={isLoading}
         >
-          <UserPlus className="mr-2 h-5 w-5" /> Sign Up
+          Sign Up
         </Button>
       </form>
-      
-      <p className="mt-8 text-center text-sm text-gray-500">
+    
+      <p className="text-center text-sm text-text-secondary">
         Already have an account?{' '}
-        <Link to="/login" className="font-bold text-architect-900 hover:text-accent-teal transition-colors">
+        <Link to="/login" className="font-bold text-primary hover:text-white transition-colors">
           Sign in
         </Link>
       </p>

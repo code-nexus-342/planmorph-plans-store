@@ -60,17 +60,17 @@ const CustomDesign: React.FC = () => {
   const prevStep = () => setStep(prev => prev - 1);
 
   return (
-    <div className="min-h-screen bg-white pt-20 pb-20">
+    <div className="min-h-screen bg-background pt-20 pb-20">
       {/* Header */}
-      <div className="bg-architect-900 text-white py-16 mb-12">
+      <div className="bg-surface/30 border-b border-white/10 backdrop-blur-md py-16 mb-12">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="max-w-3xl mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-4 text-accent-teal uppercase tracking-widest font-bold text-sm">
+            <div className="flex items-center justify-center gap-2 mb-4 text-primary uppercase tracking-widest font-bold text-sm">
               <PenTool size={16} />
               <span>Bespoke Architecture</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-6">Request Custom Design</h1>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-6 text-white">Request Custom Design</h1>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
               Collaborate with our licensed architects and engineers to bring your unique vision to life. 
               From initial sketches to full construction documentation.
             </p>
@@ -82,16 +82,16 @@ const CustomDesign: React.FC = () => {
         {/* Progress Steps */}
         <div className="mb-12">
           <div className="flex items-center justify-between relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-100 -z-10"></div>
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-white/10 -z-10"></div>
             {[1, 2, 3].map((s) => (
-              <div key={s} className={`flex flex-col items-center gap-2 bg-white px-2`}>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors duration-300 ${
-                  step >= s ? 'bg-architect-900 text-white' : 'bg-gray-100 text-gray-400'
+              <div key={s} className={`flex flex-col items-center gap-2 bg-background px-2`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors duration-300 border ${
+                  step >= s ? 'bg-primary text-background border-primary shadow-glow' : 'bg-white/5 text-text-secondary border-white/10'
                 }`}>
                   {step > s ? <Check size={20} /> : s}
                 </div>
                 <span className={`text-xs font-bold uppercase tracking-wider ${
-                  step >= s ? 'text-architect-900' : 'text-gray-400'
+                  step >= s ? 'text-primary' : 'text-text-secondary'
                 }`}>
                   {s === 1 ? 'Project Details' : s === 2 ? 'Requirements' : 'Contact Info'}
                 </span>
@@ -105,31 +105,31 @@ const CustomDesign: React.FC = () => {
           initial="hidden" 
           animate="visible" 
           variants={staggerContainer}
-          className="bg-white border border-gray-100 shadow-soft p-8 md:p-12"
+          className="glass-panel p-8 md:p-12 rounded-2xl"
         >
           <form onSubmit={handleSubmit}>
             {step === 1 && (
               <motion.div variants={fadeInUp} className="space-y-8">
-                <div className="border-b border-gray-100 pb-4 mb-6">
-                  <h2 className="text-2xl font-heading font-bold text-architect-900 flex items-center gap-2">
-                    <Home className="text-accent-teal" size={24} /> Project Overview
+                <div className="border-b border-white/10 pb-4 mb-6">
+                  <h2 className="text-2xl font-heading font-bold text-white flex items-center gap-2">
+                    <Home className="text-primary" size={24} /> Project Overview
                   </h2>
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="mb-2 block text-xs font-bold text-gray-500 uppercase tracking-wider">Project Type</label>
+                    <label className="mb-2 block text-xs font-bold text-text-secondary uppercase tracking-wider">Project Type</label>
                     <select 
                       name="projectType"
                       value={formData.projectType}
                       onChange={handleInputChange}
-                      className="flex h-12 w-full rounded-none border border-gray-200 bg-gray-50 px-4 py-3 text-architect-900 focus:outline-none focus:border-accent-teal focus:ring-1 focus:ring-accent-teal transition-all duration-300"
+                      className="flex h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
                     >
-                      <option value="">Select Type</option>
-                      <option value="residential">Residential (Villa/Bungalow)</option>
-                      <option value="commercial">Commercial</option>
-                      <option value="apartment">Apartment Complex</option>
-                      <option value="renovation">Renovation/Extension</option>
+                      <option value="" className="bg-surface text-white">Select Type</option>
+                      <option value="residential" className="bg-surface text-white">Residential (Villa/Bungalow)</option>
+                      <option value="commercial" className="bg-surface text-white">Commercial</option>
+                      <option value="apartment" className="bg-surface text-white">Apartment Complex</option>
+                      <option value="renovation" className="bg-surface text-white">Renovation/Extension</option>
                     </select>
                   </div>
                   <Input 
@@ -147,17 +147,17 @@ const CustomDesign: React.FC = () => {
                     placeholder="City, Country"
                   />
                   <Input 
-                    label="Estimated Budget"
+                    label="Estimated Budget (KES)"
                     name="budget"
                     type="number"
                     value={formData.budget}
                     onChange={handleInputChange}
-                    placeholder="$"
+                    placeholder="e.g. 5,000,000"
                   />
                 </div>
 
                 <div className="flex justify-end pt-6">
-                  <Button type="button" onClick={nextStep} className="w-full md:w-auto">
+                  <Button type="button" onClick={nextStep} className="w-full md:w-auto bg-primary text-background hover:bg-primary/90 shadow-glow border-none">
                     Next Step <ChevronRight size={16} className="ml-2" />
                   </Button>
                 </div>
@@ -166,9 +166,9 @@ const CustomDesign: React.FC = () => {
 
             {step === 2 && (
               <motion.div variants={fadeInUp} className="space-y-8">
-                <div className="border-b border-gray-100 pb-4 mb-6">
-                  <h2 className="text-2xl font-heading font-bold text-architect-900 flex items-center gap-2">
-                    <Ruler className="text-accent-teal" size={24} /> Design Requirements
+                <div className="border-b border-white/10 pb-4 mb-6">
+                  <h2 className="text-2xl font-heading font-bold text-white flex items-center gap-2">
+                    <Ruler className="text-primary" size={24} /> Design Requirements
                   </h2>
                 </div>
 
@@ -197,31 +197,31 @@ const CustomDesign: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-xs font-bold text-gray-500 uppercase tracking-wider">Additional Details / Wishlist</label>
+                  <label className="mb-2 block text-xs font-bold text-text-secondary uppercase tracking-wider">Additional Details / Wishlist</label>
                   <textarea 
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
                     rows={4}
-                    className="w-full rounded-none border border-gray-200 bg-gray-50 px-4 py-3 text-architect-900 focus:outline-none focus:border-accent-teal focus:ring-1 focus:ring-accent-teal transition-all duration-300"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
                     placeholder="Describe your vision, specific style preferences, or must-have features..."
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-xs font-bold text-gray-500 uppercase tracking-wider">Upload Plot Map or Sketches</label>
-                  <div className="border-2 border-dashed border-gray-200 bg-gray-50 p-8 text-center hover:border-accent-teal transition-colors cursor-pointer relative">
+                  <label className="mb-2 block text-xs font-bold text-text-secondary uppercase tracking-wider">Upload Plot Map or Sketches</label>
+                  <div className="border-2 border-dashed border-white/10 bg-white/5 p-8 text-center hover:border-primary transition-colors cursor-pointer relative rounded-xl">
                     <input 
                       type="file" 
                       multiple 
                       onChange={handleFileChange}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
-                    <Upload className="mx-auto text-gray-400 mb-2" size={32} />
-                    <p className="text-sm text-gray-500 font-medium">Click to upload or drag and drop</p>
-                    <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG (Max 10MB)</p>
+                    <Upload className="mx-auto text-text-secondary mb-2" size={32} />
+                    <p className="text-sm text-text-secondary font-medium">Click to upload or drag and drop</p>
+                    <p className="text-xs text-text-secondary/60 mt-1">PDF, JPG, PNG (Max 10MB)</p>
                     {formData.files && (
-                      <div className="mt-4 text-sm text-accent-teal font-bold">
+                      <div className="mt-4 text-sm text-primary font-bold">
                         {formData.files.length} file(s) selected
                       </div>
                     )}
@@ -229,10 +229,10 @@ const CustomDesign: React.FC = () => {
                 </div>
 
                 <div className="flex justify-between pt-6">
-                  <Button type="button" variant="outline" onClick={prevStep}>
+                  <Button type="button" variant="outline" onClick={prevStep} className="border-white/20 text-white hover:bg-white/10">
                     Back
                   </Button>
-                  <Button type="button" onClick={nextStep}>
+                  <Button type="button" onClick={nextStep} className="bg-primary text-background hover:bg-primary/90 shadow-glow border-none">
                     Next Step <ChevronRight size={16} className="ml-2" />
                   </Button>
                 </div>
@@ -241,9 +241,9 @@ const CustomDesign: React.FC = () => {
 
             {step === 3 && (
               <motion.div variants={fadeInUp} className="space-y-8">
-                <div className="border-b border-gray-100 pb-4 mb-6">
-                  <h2 className="text-2xl font-heading font-bold text-architect-900 flex items-center gap-2">
-                    <User className="text-accent-teal" size={24} /> Contact Information
+                <div className="border-b border-white/10 pb-4 mb-6">
+                  <h2 className="text-2xl font-heading font-bold text-white flex items-center gap-2">
+                    <User className="text-primary" size={24} /> Contact Information
                   </h2>
                 </div>
 
@@ -274,22 +274,22 @@ const CustomDesign: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-6 border border-gray-100 text-sm text-gray-500">
+                <div className="bg-white/5 p-6 border border-white/10 text-sm text-text-secondary rounded-lg">
                   <p className="flex items-start gap-2">
-                    <Check className="text-accent-teal mt-0.5" size={16} />
+                    <Check className="text-primary mt-0.5" size={16} />
                     <span>Your project will be handled by licensed architects & engineers.</span>
                   </p>
                   <p className="flex items-start gap-2 mt-2">
-                    <Check className="text-accent-teal mt-0.5" size={16} />
+                    <Check className="text-primary mt-0.5" size={16} />
                     <span>We will review your requirements and provide a preliminary consultation within 24 hours.</span>
                   </p>
                 </div>
 
                 <div className="flex justify-between pt-6">
-                  <Button type="button" variant="outline" onClick={prevStep}>
+                  <Button type="button" variant="outline" onClick={prevStep} className="border-white/20 text-white hover:bg-white/10">
                     Back
                   </Button>
-                  <Button type="submit" className="bg-accent-teal hover:bg-architect-900 text-white border-none shadow-soft">
+                  <Button type="submit" className="bg-primary hover:bg-primary/90 text-background border-none shadow-glow">
                     Submit Request
                   </Button>
                 </div>

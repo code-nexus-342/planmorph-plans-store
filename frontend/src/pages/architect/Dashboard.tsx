@@ -81,7 +81,7 @@ const ArchitectDashboard: React.FC = () => {
                       {design.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-500">${design.price}</td>
+                  <td className="px-6 py-4 text-gray-500">KES {design.price}</td>
                   <td className="px-6 py-4 text-gray-500">{new Date(design.created_at).toLocaleDateString()}</td>
                 </tr>
               ))}

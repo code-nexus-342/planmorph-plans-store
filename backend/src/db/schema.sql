@@ -12,7 +12,8 @@ CREATE TABLE users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_verified BOOLEAN DEFAULT FALSE,
     verification_code VARCHAR(8),
-    verification_expires_at TIMESTAMP WITH TIME ZONE
+    verification_expires_at TIMESTAMP WITH TIME ZONE,
+    settings JSONB DEFAULT '{}'
 );
 
 CREATE TABLE architect_applications (

@@ -4,7 +4,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { useAuth } from '../context/AuthContext';
 import { login as loginApi } from '../services/auth.service';
-import { LogIn } from 'lucide-react';
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -31,25 +31,26 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-heading font-bold text-architect-900 mb-2">Welcome Back</h2>
-        <p className="text-gray-500">Enter your credentials to access your account</p>
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-white mb-1">Sign In</h2>
+        <p className="text-sm text-text-secondary">Enter your credentials to continue</p>
       </div>
-      
+    
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-100 p-4 text-sm text-red-600 text-center">
+        <div className="bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400 text-center rounded-lg">
           {error}
         </div>
       )}
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
+    
+      <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           label="Email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          className="bg-white/5 border-white/10 text-white placeholder-text-secondary/50 focus:border-primary focus:ring-primary rounded-lg"
         />
         <Input
           label="Password"
@@ -57,23 +58,23 @@ const Login: React.FC = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          className="bg-white/5 border-white/10 text-white placeholder-text-secondary/50 focus:border-primary focus:ring-primary rounded-lg"
         />
         <Button 
           type="submit" 
-          className="w-full h-12 text-lg shadow-soft" 
+          className="w-full h-10 text-base shadow-glow bg-primary text-background hover:bg-primary/90 font-bold rounded-lg border-none" 
           isLoading={isLoading}
         >
-          <LogIn className="mr-2 h-5 w-5" /> Sign In
+          Sign In
         </Button>
       </form>
-      
-      <p className="mt-8 text-center text-sm text-gray-500">
-        Don't have an account?{' '}
-        <Link to="/register" className="font-bold text-architect-900 hover:text-accent-teal transition-colors">
-          Sign up
+    
+      <p className="text-center text-sm text-text-secondary">
+        No account?{' '}
+        <Link to="/register" className="font-bold text-primary hover:text-white transition-colors">
+          Create one!
         </Link>
       </p>
-
     </div>
   );
 };
